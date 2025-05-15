@@ -44,7 +44,7 @@ namespace RandomArtScreensaver
 			lblXeno.RightToLeft = RightToLeft.No;
 			lblXeno.Size = new Size(257, 17);
 			lblXeno.TabIndex = 3;
-			lblXeno.Text = "XenoSystems, LLC.";
+			lblXeno.Text = "GNU General Public License v3.0";
 			lblXeno.TextAlign = ContentAlignment.TopCenter;
 			// 
 			// lblVersion
@@ -69,7 +69,7 @@ namespace RandomArtScreensaver
 			LblMe.RightToLeft = RightToLeft.No;
 			LblMe.Size = new Size(305, 17);
 			LblMe.TabIndex = 1;
-			LblMe.Text = "Programmed by: Paul S. Spomer";
+			LblMe.Text = "Open Source: github.com/MadMerick";
 			LblMe.TextAlign = ContentAlignment.TopCenter;
 			// 
 			// lblTitle
