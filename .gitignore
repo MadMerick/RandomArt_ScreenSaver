@@ -1,4 +1,3 @@
 RandomArt/obj/Debug/*
 RandomArt/obj/Release/*
 RandomArt/bin/*
-!RandomArt/bin/Release/net9.0-windows/win-x64/publish/RandomArt.scr
