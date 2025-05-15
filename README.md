@@ -107,4 +107,4 @@ Contributions are welcome! Please fork the repository, create a branch for your 
 
 ## License
 
-This project is licensed under the [GNU General Public License]([LICENSE](https://github.com/MadMerick/RandomArt_ScreenSaver/blob/main/LICENSE)). See the `LICENSE` file for more information.
+This project is licensed under the GNU General Public License ( [LICENSE](https://github.com/MadMerick/RandomArt_ScreenSaver/blob/main/LICENSE) ). See the `LICENSE` file for more information.
