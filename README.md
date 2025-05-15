@@ -1,10 +1,8 @@
 # Random Art Screen Saver (C# Windows Forms)
 
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![.NET](https://github.com/MadMerick/RandomArt_ScreenSaver/workflows/.NET/badge.svg)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/MadMerick/RandomArt_ScreenSaver)
-
-## Overview
 
 The Random Art Screen Saver is a C# Windows Forms application that displays a rotating selection of procedurally generated visual art as a custom screen saver. It cycles through various artistic styles, each with its own unique parameters, creating a dynamic and ever-changing display on your screen.
 
@@ -107,4 +105,8 @@ Contributions are welcome! Please fork the repository, create a branch for your 
 
 ## License
 
-This project is licensed under the GNU General Public License ( [LICENSE](https://github.com/MadMerick/RandomArt_ScreenSaver/blob/main/LICENSE) ). See the `LICENSE` file for more information.
+This project is licensed under the **GNU General Public License v3.0**. See the full text of the license in the [LICENSE](LICENSE) file.
+
+---
+
+**Note:** The full text of the GNU General Public License v3.0 is available in the `LICENSE` file in this repository.
