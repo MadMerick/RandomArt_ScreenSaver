@@ -1,0 +1,2 @@
+C:\Users\PaulSpomer\Documents\Projects\RA2\RandomArt\bin\Release\net9.0-windows\win-x64\publish\RandomArt.pdb
+C:\Users\PaulSpomer\Documents\Projects\RA2\RandomArt\bin\Release\net9.0-windows\win-x64\publish\RandomArt.exe
