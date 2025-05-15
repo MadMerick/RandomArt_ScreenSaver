@@ -76,6 +76,6 @@ namespace RandomArtScreensaver
         public decimal Center { get; set; } = (decimal)0.2; //1-99%
     }
     public class Scribble {
-        public int Length { get; set; } = 4;
+        public int Length { get; set; } = 4; //1-100
     }
 }

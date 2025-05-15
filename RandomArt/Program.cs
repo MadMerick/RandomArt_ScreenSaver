@@ -70,8 +70,8 @@ namespace RandomArtScreensaver
                 else // No arguments
                 {
                     // Run in full-screen mode by default or show settings?
-                    //ShowTitleScreenAndRun();
-                    ShowSettingsForm();
+                    ShowTitleScreenAndRun();
+                    //ShowSettingsForm();
                 }
             }
             catch (Exception ex)
