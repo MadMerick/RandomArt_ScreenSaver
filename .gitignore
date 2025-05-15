@@ -1,0 +1,4 @@
+RandomArt/obj/
+RandomArt/bin/Release/net9.0-windows/win-x64/publish/RandomArt.scr
+# You might want to ignore the entire Release output too, if it contains other large files
+RandomArt/bin/Release/
