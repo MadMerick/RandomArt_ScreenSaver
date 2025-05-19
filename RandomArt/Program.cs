@@ -70,8 +70,8 @@ namespace RandomArtScreensaver
                 else // No arguments
                 {
                     // Run in full-screen mode by default or show settings?
-                    ShowTitleScreenAndRun();
-                    //ShowSettingsForm();
+                    //ShowTitleScreenAndRun();
+                    ShowSettingsForm();
                 }
             }
             catch (Exception ex)
@@ -284,6 +284,7 @@ namespace RandomArtScreensaver
         //private static readonly string logFilePath = Path.Combine("C:\\Data", logFileName);
         
         public static int? All_artType = null;
+        public static bool All_Alpha = false;
         public static SaverSettings? saverSettings;
 
         public static List<RandomArt>? screensaverForms;

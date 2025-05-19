@@ -41,6 +41,8 @@ namespace RandomArtScreensaver
         private TrackBar sldBubbleCenter = new TrackBar();
         private Label lblSpeed = new Label();
         private Label lblSpeedMS = new Label();
+        private CheckBox chkAlpha = new CheckBox();
+        private CheckBox chkLarge = new CheckBox();
         private Label lblWarp = new Label();
         private Label lblWarpSpeed = new Label();
         private TrackBar sldWarpSpeed = new TrackBar();
@@ -68,7 +70,6 @@ namespace RandomArtScreensaver
         private TrackBar sldScribbleLen = new TrackBar();
         private GroupBox frmBackGround = new GroupBox();
         private TextBox txtListEdit = new TextBox();
-        private int _clickedSubItemIndex = -1;
         private ListView lstTypes = new ListView();
         private GroupBox frmArtType = new GroupBox();
         private Label lblDemo = new Label();
@@ -110,6 +111,8 @@ namespace RandomArtScreensaver
             sldAngles = new TrackBar();
             lblSpeed = new Label();
             lblSpeedMS = new Label();
+            chkAlpha = new CheckBox();
+            chkLarge = new CheckBox();
             lblWarp = new Label();
             lblWarpSpeed = new Label();
             sldWarpSpeed = new TrackBar();
@@ -285,6 +288,8 @@ namespace RandomArtScreensaver
             frmSettings.Controls.Add(sldAngles);
             frmSettings.Controls.Add(lblSpeed);
             frmSettings.Controls.Add(lblSpeedMS);
+            frmSettings.Controls.Add(chkAlpha);
+            frmSettings.Controls.Add(chkLarge);
             frmSettings.Controls.Add(lblWarp);
             frmSettings.Controls.Add(lblWarpSpeed);
             frmSettings.Controls.Add(sldWarpSpeed);
@@ -539,6 +544,36 @@ namespace RandomArtScreensaver
             lblSpeedMS.Size = new Size(41, 17);
             lblSpeedMS.TabIndex = 34;
             lblSpeedMS.Text = "ms";
+            // 
+            // chkAlpha
+            // 
+            chkAlpha.BackColor = SystemColors.Control;
+            chkAlpha.ForeColor = SystemColors.ControlText;
+            chkAlpha.Location = new Point(8, 152);
+            chkAlpha.Name = "chkAlpha";
+            chkAlpha.RightToLeft = RightToLeft.No;
+            chkAlpha.Size = new Size(153, 17);
+            chkAlpha.TabIndex = 35;
+            chkAlpha.Text = "No Transparent Colors";
+            chkAlpha.UseVisualStyleBackColor = false;
+            chkAlpha.Cursor = System.Windows.Forms.Cursors.Hand;
+            chkAlpha.CheckedChanged += chkAlpha_CheckedChanged;
+            ToolTip1.SetToolTip(chkAlpha, "Colors are always opaque vs allow transparent colors.");
+            // 
+            // chkLarge
+            // 
+            chkLarge.BackColor = SystemColors.Control;
+            chkLarge.ForeColor = SystemColors.ControlText;
+            chkLarge.Location = new Point(8, 152);
+            chkLarge.Name = "chkLarge";
+            chkLarge.RightToLeft = RightToLeft.No;
+            chkLarge.Size = new Size(153, 17);
+            chkLarge.TabIndex = 35;
+            chkLarge.Text = "Large Pixel";
+            chkLarge.UseVisualStyleBackColor = false;
+            chkLarge.Cursor = System.Windows.Forms.Cursors.Hand;
+            chkLarge.CheckedChanged += chkLarge_CheckedChanged;
+            ToolTip1.SetToolTip(chkLarge, "Use an extra large pixel.");
             // 
             // lblWarp
             // 
@@ -995,42 +1030,50 @@ namespace RandomArtScreensaver
             lblSpeedMS.Left = txtSpeed.Left + txtSpeed.Width + 4;
             lblSpeedMS.Height = txtSpeed.Height;
             lblSpeedMS.Width = Program.TextWidth(lblSpeedMS.Text, lblSpeedMS.Font) + 4;
-            lblScribbleLen.Top = txtSpeed.Top + txtSpeed.Height + 8;
+            chkAlpha.Left = lblSpeed.Left;
+            chkAlpha.Top = txtSpeed.Top + txtSpeed.Height + 8;
+            chkAlpha.Height = txtSpeed.Height;
+            chkAlpha.Width = Program.TextWidth(chkAlpha.Text, chkAlpha.Font) + 22;
+            chkLarge.Left = chkAlpha.Left;
+            chkLarge.Top = chkAlpha.Top + chkAlpha.Height + 8;
+            chkLarge.Height = chkAlpha.Height;
+            chkLarge.Width = Program.TextWidth(chkLarge.Text, chkLarge.Font) + 22;
+            lblScribbleLen.Top = chkAlpha.Top + chkAlpha.Height + 8;
             lblScribbleLen.Left = lblSpeed.Left;
             lblScribbleLen.Height= lblSpeed.Height;
             lblScribbleLen.Width = Program.TextWidth(lblScribbleLen.Text, lblScribbleLen.Font) + 4;
             sldScribbleLen.Top = lblScribbleLen.Top;
             sldScribbleLen.Left = lblScribbleLen.Left + lblScribbleLen.Width + 4;
             sldScribbleLen.Width = frmSettings.Width - (sldScribbleLen.Left + 8);
-            lblLightCenter.Top = txtSpeed.Top + txtSpeed.Height + 8;
+            lblLightTrans.Left = lblLightCenter.Left;
+            lblLightTrans.Top = chkAlpha.Top + chkAlpha.Height + 8;
+            lblLightTrans.Height = lblLightCenter.Height;
+            lblLightTrans.Width = Program.TextWidth(lblLightTrans.Text, lblLightTrans.Font) + 4;
+            sldLightTrans.Left = lblLightTrans.Left + lblLightTrans.Width + 4;
+            sldLightTrans.Top = lblLightTrans.Top;
+            sldLightTrans.Width = frmSettings.Width - (sldLightTrans.Left + 8);
+            lblLightCenter.Top = sldLightTrans.Top + sldLightTrans.Height + 4;
             lblLightCenter.Left = lblSpeed.Left;
             lblLightCenter.Width = Program.TextWidth(lblLightCenter.Text, lblLightCenter.Font) + 4;
             lblLightCenter.Height = lblSpeed.Height;
             sldLightCenter.Left = lblLightCenter.Left + lblLightCenter.Width + 4;
             sldLightCenter.Top = lblLightCenter.Top;
             sldLightCenter.Width = frmSettings.Width - (sldLightCenter.Left + 8);
-            lblLightTrans.Left = lblLightCenter.Left;
-            lblLightTrans.Top = sldLightCenter.Top + sldLightCenter.Height + 4;
-            lblLightTrans.Height = lblLightCenter.Height;
-            lblLightTrans.Width = Program.TextWidth(lblLightTrans.Text, lblLightTrans.Font) + 4;
-            sldLightTrans.Left = lblLightTrans.Left + lblLightTrans.Width + 4;
-            sldLightTrans.Top = lblLightTrans.Top;
-            sldLightTrans.Width = frmSettings.Width - (sldLightTrans.Left + 8);
-            lblBubbleCenter.Top = txtSpeed.Top + txtSpeed.Height + 8;
+            lblBubbleTrans.Left = lblBubbleCenter.Left;
+            lblBubbleTrans.Top = chkAlpha.Top + chkAlpha.Height + 8;
+            lblBubbleTrans.Height = lblBubbleCenter.Height;
+            lblBubbleTrans.Width = Program.TextWidth(lblBubbleTrans.Text, lblBubbleTrans.Font) + 4;
+            sldBubbleTrans.Left = lblBubbleTrans.Left + lblBubbleTrans.Width + 4;
+            sldBubbleTrans.Top = lblBubbleTrans.Top;
+            sldBubbleTrans.Width = frmSettings.Width - (sldBubbleTrans.Left + 8);
+            lblBubbleCenter.Top = sldBubbleTrans.Top + sldBubbleTrans.Height + 4;
             lblBubbleCenter.Left = lblSpeed.Left;
             lblBubbleCenter.Height = lblSpeed.Height;
             lblBubbleCenter.Width = Program.TextWidth(lblBubbleCenter.Text, lblBubbleCenter.Font) + 4;
             sldBubbleCenter.Left = lblBubbleCenter.Left + lblBubbleCenter.Width + 4;
             sldBubbleCenter.Top = lblBubbleCenter.Top;
             sldBubbleCenter.Width = frmSettings.Width - (sldBubbleCenter.Left + 8);
-            lblBubbleTrans.Left = lblBubbleCenter.Left;
-            lblBubbleTrans.Top = sldBubbleCenter.Top + sldBubbleCenter.Height + 4;
-            lblBubbleTrans.Height = lblBubbleCenter.Height;
-            lblBubbleTrans.Width = Program.TextWidth(lblBubbleTrans.Text, lblBubbleTrans.Font) + 4;
-            sldBubbleTrans.Left = lblBubbleTrans.Left + lblBubbleTrans.Width + 4;
-            sldBubbleTrans.Top = lblBubbleTrans.Top;
-            sldBubbleTrans.Width = frmSettings.Width - (sldBubbleTrans.Left + 8);
-            lblPlasmaTransistion.Top = txtSpeed.Top + txtSpeed.Height + 8;
+            lblPlasmaTransistion.Top = chkAlpha.Top + chkAlpha.Height + 8;
             lblPlasmaTransistion.Height = txtSpeed.Height;
             lblPlasmaTransistion.Left = lblSpeed.Left;
             lblPlasmaTransistion.Width = Program.TextWidth(lblPlasmaTransistion.Text, lblPlasmaTransistion.Font) + 4;
@@ -1038,7 +1081,7 @@ namespace RandomArtScreensaver
             txtPlasmaTransition.Left = lblPlasmaTransistion.Left + lblPlasmaTransistion.Width + 4;
             txtPlasmaTransition.Width = Program.TextWidth("1000", txtSpeed.Font) + 8;
             txtPlasmaTransition.Height = txtSpeed.Height;
-            chkWarpSmooth.Top = txtSpeed.Top + txtSpeed.Height + 8;
+            chkWarpSmooth.Top = chkAlpha.Top + chkAlpha.Height + 8;
             chkWarpSmooth.Left = lblSpeed.Left;
             chkWarpSmooth.Width = frmSettings.Width - 16;
             lblWarpSpeed.Top = chkWarpSmooth.Top + chkWarpSmooth.Height + 8;
@@ -1293,6 +1336,8 @@ namespace RandomArtScreensaver
             lblScribbleLen.Visible = false;
             sldScribbleLen.Visible = false;
 
+            chkLarge.Visible = false;
+
             // Assuming optPlasma is a Control array or a List<Control>
             for (int i = 0; i <= 2; i++)
             {
@@ -1313,17 +1358,24 @@ namespace RandomArtScreensaver
             if (ItmX == Enum.GetName(typeof(artType), artType.Dots))
             {
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Dots);
-                txtSpeed.Text = s != null ? s.Speed.ToString() : "1"; // Assuming lSpeed is an array or List
+                txtSpeed.Text = s != null ? s.Speed.ToString() : "10"; // Assuming lSpeed is an array or List
+                chkAlpha.Checked = s != null ? s.Alpha : true;
+                chkLarge.Visible = true;
+                chkLarge.Checked = Settings.saverSettings.dot.Large;
             }
             else if (ItmX == Enum.GetName(typeof(artType), artType.Grow))
             {
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Grow);
                 txtSpeed.Text = s != null ? s.Speed.ToString() : "10";
+                chkAlpha.Checked = s != null ? s.Alpha : true;
+                chkLarge.Visible = true;
+                chkLarge.Checked = Settings.saverSettings.grow.Large;
             }
             else if (ItmX == Enum.GetName(typeof(artType), artType.Weeds))
             {
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Weeds);
                 txtSpeed.Text = s != null ? s.Speed.ToString() : "500";
+                chkAlpha.Checked = s != null ? s.Alpha : true;
             }
             else if (ItmX == Enum.GetName(typeof(artType), artType.Light))
             {
@@ -1332,7 +1384,8 @@ namespace RandomArtScreensaver
                 sldLightCenter.Visible = true;
                 sldLightTrans.Visible = true;
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Light);
-                txtSpeed.Text = s != null ? s.Speed.ToString() : "500";
+                txtSpeed.Text = s != null ? s.Speed.ToString() : "1000";
+                chkAlpha.Checked = s != null ? s.Alpha : false;
             }
             else if (ItmX == Enum.GetName(typeof(artType), artType.Warp))
             {
@@ -1343,7 +1396,8 @@ namespace RandomArtScreensaver
                 lblWarpSpeed.Visible = true;
                 sldWarpSpeed.Visible = true;
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Warp);
-                txtSpeed.Text = s != null ? s.Speed.ToString() : "500";
+                txtSpeed.Text = s != null ? s.Speed.ToString() : "100";
+                chkAlpha.Checked = s != null ? s.Alpha : false;
             }
             else if (ItmX == Enum.GetName(typeof(artType), artType.Bubbles))
             {
@@ -1352,14 +1406,16 @@ namespace RandomArtScreensaver
                 sldBubbleCenter.Visible = true;
                 sldBubbleTrans.Visible = true;
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Bubbles);
-                txtSpeed.Text = s != null ? s.Speed.ToString() : "500";
+                txtSpeed.Text = s != null ? s.Speed.ToString() : "1000";
+                chkAlpha.Checked = s != null ? s.Alpha : false;
             }
             else if (ItmX == Enum.GetName(typeof(artType), artType.Scribble))
             {
                 lblScribbleLen.Visible = true;
                 sldScribbleLen.Visible = true;
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Scribble);
-                txtSpeed.Text = s != null ? s.Speed.ToString() : "500";
+                txtSpeed.Text = s != null ? s.Speed.ToString() : "100";
+                chkAlpha.Checked = s != null ? s.Alpha : true;
             }
             else if (ItmX == Enum.GetName(typeof(artType), artType.Plasma))
             {
@@ -1378,6 +1434,7 @@ namespace RandomArtScreensaver
                 lblPlasmaTransistion.Visible = true;
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Plasma);
                 txtSpeed.Text = s != null ? s.Speed.ToString() : "5000";
+                chkAlpha.Checked = s != null ? s.Alpha : false;
             }
         }
         public void NewDemo()
@@ -1668,6 +1725,45 @@ namespace RandomArtScreensaver
             }
             NewDemo();
         }
+        private void chkLarge_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            if(lstTypes.SelectedItems.Count > 0)
+            {
+                ListViewItem Itm = lstTypes.SelectedItems[0];
+                if (Itm.Text == Enum.GetName(typeof(artType), artType.Dots))
+                    Settings.saverSettings.dot.Large = chkLarge.Checked;
+                else if (Itm.Text == Enum.GetName(typeof(artType), artType.Grow))
+                    Settings.saverSettings.grow.Large = chkLarge.Checked;
+            }
+        }
+        private void chkAlpha_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            if(lstTypes.SelectedItems.Count > 0) {
+                ListViewItem Itm = lstTypes.SelectedItems[0];
+                foreach (ArtType a in Settings.saverSettings.artTypes)
+                {
+                    string? sName = Enum.GetName(typeof(artType), a.Type);
+                    if (string.IsNullOrEmpty(sName)) sName = a.Type.ToString();
+                    if (Itm.Text == sName)
+                    {
+                        a.Alpha = chkAlpha.Checked;
+                        if (a.Type == artType.Light)
+                        {
+                            lblLightTrans.Enabled = !chkAlpha.Checked;
+                            sldLightTrans.Enabled = !chkAlpha.Checked;
+                        }
+                        else if (a.Type == artType.Bubbles)
+                        {
+                            lblBubbleTrans.Enabled = !chkAlpha.Checked;
+                            sldBubbleTrans.Enabled = !chkAlpha.Checked;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
         private void cmdB_Click(object? sender, EventArgs e)
         {
             sldBlue.Value = 0;
@@ -1700,6 +1796,7 @@ namespace RandomArtScreensaver
         private void lstTypes_SelectItemChanged(object? sender, ListViewItemSelectionChangedEventArgs e)
         {
             if (e.Item == null) return;
+            if (randomArt != null) randomArt.Stop();
             SetTypeSettings(e.Item.Text);
             txtListEdit.Text = Convert.ToString(Val(e.Item.SubItems[1].Text));
             txtListEdit.SetBounds(lstTypes.Columns[0].Width + lstTypes.Left, e.Item.Bounds.Top + lstTypes.Top, lstTypes.Columns[1].Width, e.Item.Bounds.Height);

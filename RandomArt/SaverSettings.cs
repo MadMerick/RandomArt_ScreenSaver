@@ -8,7 +8,8 @@ using System.Collections;
 
 namespace RandomArtScreensaver
 {
-    public class SaverSettings {
+    public class SaverSettings
+    {
         public bool setWallpaper { get; set; } = false;
         public bool UseBack { get; set; } = true;
         public bool AllScreens { get; set; } = false;
@@ -18,47 +19,39 @@ namespace RandomArtScreensaver
         public Light light = new Light();
         public Bubble bubble = new Bubble();
         public Scribble scribble = new Scribble();
+        public Dot dot = new Dot();
+        public Grow grow = new Grow();
         public List<ArtType> artTypes { get; set; } = new List<ArtType> {
-            new ArtType(artType.Dots, 12, 100),//12, 100 - G
-            new ArtType(artType.Grow, 12, 100),//12, 100 - G
-            new ArtType(artType.Scribble, 12, 100),//12, 500 - G
-            new ArtType(artType.Light, 13, 1000),//13, 1000 - G
-            new ArtType(artType.Weeds, 12, 500),//12, 500 - G
-            new ArtType(artType.Bubbles, 13, 1000),//13, 1000 - G
-            new ArtType(artType.Warp, 13, 100),//13, 500 - 
-            new ArtType(artType.Plasma, 13, 5000)//13, 5000 - 
+            new ArtType(artType.Dots, 12, 10, true),//12, 100 - G
+            new ArtType(artType.Grow, 12, 10, true),//12, 100 - G
+            new ArtType(artType.Scribble, 12, 100, true),//12, 500 - G
+            new ArtType(artType.Light, 13, 1000, false),//13, 1000 - G
+            new ArtType(artType.Weeds, 12, 500, true),//12, 500 - G
+            new ArtType(artType.Bubbles, 13, 1000, false),//13, 1000 - G
+            new ArtType(artType.Warp, 13, 100 , false),//13, 500 - 
+            new ArtType(artType.Plasma, 13, 5000, false)//13, 5000 - 
         };
     }
-    public class Warp {
-        public int Angles { get; set; } = 50; //4-100
-        public bool Rand { get; set; } = true;
-        public bool Smooth { get; set; } = true;
-        public int Speed { get; set; } = 20; //1-250
-    }
-    public class Plasma {
-        public int Type { get; set; } = 0; //0=Rand, 1=Mirror, 2=Normal
-        public bool ColorRand { get; set; } = true;
-        public bool ColorVRand { get; set; } = true;
-        public int ColorV { get; set; } = 255; //Color Variation 0-255
-        public int Color { get; set; } = 4; //ColorAmount 1-8
-        public int Transition { get ; set; } = 100; //how smooth between scenes
-    }
-    public class BackGround {
+    public class BackGround
+    {
         public int R { get; set; } = 0; //0-255
         public int G { get; set; } = 0; //0-255
         public int B { get; set; } = 0; //0-255
         public bool Rand { get; set; } = false;
     }
-    public class ArtType {
+    public class ArtType
+    {
         public artType Type { get; set; }
         public int Percentage { get; set; }
-        public int Speed { get; set; } 
+        public int Speed { get; set; }
+        public bool Alpha { get; set; }
 
-        public ArtType(artType type, int percentage, int speed)
+        public ArtType(artType type, int percentage, int speed, bool alpha)
         {
             Type = type;
             Percentage = percentage;
             Speed = speed;
+            Alpha = alpha;
         }
 
         // Override ToString for easier debugging or display
@@ -67,15 +60,45 @@ namespace RandomArtScreensaver
             return $"{Type}: {Percentage}% @ {Speed}";
         }
     }
-    public class Light {
+    #region artTypes
+    public class Light
+    {
         public decimal Transparent { get; set; } = (decimal)0.0; //0-99%
         public decimal Center { get; set; } = (decimal)0.0; //0-100%
     }
-    public class Bubble {
+    public class Bubble
+    {
         public decimal Transparent { get; set; } = (decimal)0.5;//0-99%
         public decimal Center { get; set; } = (decimal)0.2; //1-99%
     }
-    public class Scribble {
+    public class Scribble
+    {
         public int Length { get; set; } = 4; //1-100
     }
+    public class Dot
+    {
+        public bool Large { get; set; } = true;
+    }
+    public class Grow
+    {
+        public bool Large { get; set; } = true;
+    }
+    public class Warp
+    {
+        public int Angles { get; set; } = 50; //4-100
+        public bool Rand { get; set; } = true;
+        public bool Smooth { get; set; } = true;
+        public int Speed { get; set; } = 20; //1-250
+    }
+    public class Plasma
+    {
+        public int Type { get; set; } = 0; //0=Rand, 1=Mirror, 2=Normal
+        public bool ColorRand { get; set; } = true;
+        public bool ColorVRand { get; set; } = true;
+        public int ColorV { get; set; } = 255; //Color Variation 0-255
+        public int Color { get; set; } = 4; //ColorAmount 1-8
+        public int Transition { get; set; } = 100; //how smooth between scenes
+    }
+    
+    #endregion
 }

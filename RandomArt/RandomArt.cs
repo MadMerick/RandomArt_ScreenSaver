@@ -19,6 +19,7 @@ namespace RandomArtScreensaver
         #region Static Methods for Screen Saver Functionality
         private Random _random = new Random();
         private bool Drawing = false;
+        private bool _alpha = true;
         public System.Windows.Forms.Timer tmrPlasma = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrDot = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrWarp = new System.Windows.Forms.Timer();
@@ -171,14 +172,21 @@ namespace RandomArtScreensaver
                     if (randomNumber < cumulativeFrequency)
                     {
                         _artType = (int)_a.Type;
+                        _alpha = _a.Alpha;
                         break;
                     }
                 }
                 if (Settings.saverSettings.AllScreens == true) {
                     if (Settings.All_artType == null)
+                    {
                         Settings.All_artType = _artType;
+                        Settings.All_Alpha = _alpha;
+                    }
                     else
+                    {
                         _artType = Settings.All_artType;
+                        _alpha = Settings.All_Alpha;
+                    }
                 }
                 Settings.Log("ArtType:" + _artType);
                 _Pixels = new Color[Width + 1, Height + 1];
@@ -293,6 +301,52 @@ namespace RandomArtScreensaver
                 }
             }
         }
+        unsafe private void DrawPixel(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color)
+        {
+            if (_screenBuffer == null) return;
+            if (x >= 0 && x < Width && y >= 0 && y < Height)
+            {
+                int offset = y * stride + x * bytesPerPixel;
+                if (offset >= 0 && offset < stride * _screenBuffer.Height)
+                {
+                    pixelPtr[offset] = color.B;
+                    pixelPtr[offset + 1] = color.G;
+                    pixelPtr[offset + 2] = color.R;
+                    pixelPtr[offset + 3] = color.A;
+                }
+            }
+        }
+        unsafe private void DrawLargePixel(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color)
+        {
+            for (int newX = x - 1; newX < x + 3; newX++)
+            {
+                for (int newY = y - 1; newY < y + 3; newY++)
+                {
+                    if (newX == x - 1 || newY == y - 1 || newX == x + 2 || newY == y + 2)
+                    {
+                        Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, newX, newY);
+                        if (c.A != 0)
+                            DrawPixel(pixelPtr, stride, bytesPerPixel, newX, newY, AverageColor(c, color));
+                    }
+                    else
+                    DrawPixel(pixelPtr, stride, bytesPerPixel, newX, newY, color);
+                }
+            }
+        }
+        unsafe private Color GetPixelColor(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y)
+        {
+            Color rColor = new Color();
+            if (x >= 0 && x < Width && y >= 0 && y < Height)
+            {
+                int offset = y * stride + x * bytesPerPixel;
+                byte b = pixelPtr[offset];
+                byte g = pixelPtr[offset + 1];
+                byte r = pixelPtr[offset + 2];
+                byte a = pixelPtr[offset + 3];
+                rColor = Color.FromArgb(a, r, g, b);
+            }
+            return rColor;
+        }
         #endregion
         #region DoMethods
         private void DoScribble()
@@ -306,6 +360,7 @@ namespace RandomArtScreensaver
             int g = _random.Next(256);
             int b = _random.Next(256);
             int a = _random.Next(256);
+            if (_alpha) a = 255;
             int l = _random.Next((Width + Height) * Settings.saverSettings.scribble.Length);
 
             int x = _random.Next(Width + 1);
@@ -383,14 +438,16 @@ namespace RandomArtScreensaver
         {
             if (Drawing) return;
             if (_screenBuffer == null) return;
+            if (Settings.saverSettings == null) return;
             Drawing = true;
 
             int r = _random.Next(256);
             int g = _random.Next(256);
             int b = _random.Next(256);
             int a = _random.Next(256);
+            if (_alpha) a = 255;
             int x = _random.Next(Width + 1);
-            int h = Height - 2;
+            int h = Height - 1;
 
             BitmapData? bmpData = null;
             try
@@ -420,10 +477,10 @@ namespace RandomArtScreensaver
                                 if (currentAlpha == 0)
                                 {
                                     // Set the new pixel color
-                                    pixelPtr[offset] = (byte)b;
-                                    pixelPtr[offset + 1] = (byte)g;
-                                    pixelPtr[offset + 2] = (byte)r;
-                                    pixelPtr[offset + 3] = (byte)a;
+                                    if (Settings.saverSettings.grow.Large)
+                                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
+                                    else
+                                        DrawPixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
                                     break;
                                 }
                             }
@@ -452,12 +509,14 @@ namespace RandomArtScreensaver
         {
             if (Drawing) return;
             if (_screenBuffer == null) return;
+            if (Settings.saverSettings == null) return;
             Drawing = true;
 
             int r = _random.Next(256);
             int g = _random.Next(256);
             int b = _random.Next(256);
             int a = _random.Next(256);
+            if (_alpha) a = 255;
             int x = _random.Next(Width + 1);
             int y = _random.Next(Height + 1);
 
@@ -473,17 +532,10 @@ namespace RandomArtScreensaver
                 {
                     byte* pixelPtr = (byte*)ptr;
 
-                    if (x >= 0 && x < Width && y >= 0 && y < Height)
-                    {
-                        int offset = y * stride + x * bytesPerPixel;
-                        if (offset >= 0 && offset < stride * _screenBuffer.Height)
-                        {
-                            pixelPtr[offset] = (byte)b;
-                            pixelPtr[offset + 1] = (byte)g;
-                            pixelPtr[offset + 2] = (byte)r;
-                            pixelPtr[offset + 3] = (byte)a;
-                        }
-                    }
+                    if (Settings.saverSettings.dot.Large)
+                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
+                    else
+                        DrawPixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
                 }
             }
             finally
@@ -500,6 +552,7 @@ namespace RandomArtScreensaver
         private void DoWeeds()
         {
             if (Drawing) return;
+            if (Settings.saverSettings == null) return;
             if (_screenBuffer == null) return;
             Drawing = true;
 
@@ -507,7 +560,7 @@ namespace RandomArtScreensaver
             int g = _random.Next(256);
             int b = _random.Next(256);
             int a = _random.Next(256);
-
+            if (_alpha) a = 255;
             int x = _random.Next(Width + 1);
             int y = _random.Next(Height + 1);
 
@@ -619,7 +672,8 @@ namespace RandomArtScreensaver
                                     int R = prevColor.R + _random.Next(-1, 2);
                                     int G = prevColor.G + _random.Next(-1, 2);
                                     int B = prevColor.B + _random.Next(-1, 2);
-                                    int A = 255; //prevColor.A + _random.Next(-1, 2);
+                                    int A = prevColor.A + _random.Next(-1, 2);
+                                    if (_alpha) A = 255;
                                     if (R > 255) R = 255;
                                     if (R < 0) R = 0;
                                     if (G > 255) G = 255;
@@ -759,6 +813,7 @@ namespace RandomArtScreensaver
                     byte* pixelPtr = (byte*)ptr;
                     decimal alphaStep = Decimal.Divide(100, maxRadius - (Settings.saverSettings.light.Center * maxRadius));
                     int maxAlpha = (int)((1 - Settings.saverSettings.light.Transparent) * 255); // the most opaque it will get = center
+                    if (_alpha) maxAlpha = 255;
                     decimal start = Settings.saverSettings.light.Center * maxRadius;
                     bool[,] done = new bool[2 * maxRadius + 1, 2 * maxRadius + 1];
                     for (int currentRadius = 1; currentRadius <= maxRadius; currentRadius++)
@@ -864,6 +919,7 @@ namespace RandomArtScreensaver
                     bool[,] done = new bool[2 * maxRadius + 1, 2 * maxRadius + 1];
                     decimal start = Settings.saverSettings.bubble.Center * maxRadius;
                     int maxAlpha = (int)((1 - Settings.saverSettings.bubble.Transparent) * 255); // the most opaque it will get = edge
+                    if (_alpha) maxAlpha = 255;
                     for (int currentRadius = (int)start; currentRadius <= maxRadius; currentRadius++)
                     {
                         // Calculate alpha, modified by centerTransparencyPercent and fadeStartPercent
@@ -986,11 +1042,14 @@ namespace RandomArtScreensaver
 
                     //randomize color in all corners
                     Color cColor = Color.FromArgb(_random.Next(255), _random.Next(255), _random.Next(255), _random.Next(255));
+                    if (_alpha) cColor = Color.FromArgb(255, cColor.R, cColor.G, cColor.B);
 
                     while (i < ColorAmount * ColorAmount) //ColorAmount = 1-7 - keep going until we have have found empty pixel
                     {
                         int[] iC = { cColor.A, cColor.R, cColor.G, cColor.B };
-                        for (int c = 0; c < 4; c++)
+                        int cnt = 4;
+                        if (_alpha) cnt = 3;
+                        for (int c = 0; c < cnt; c++)
                         {
                             int r = _random.Next(0, 2);
                             if (r == 0) r = -1;
@@ -1015,12 +1074,12 @@ namespace RandomArtScreensaver
 
                                 if (iD == 0) // go up a segment
                                     if (cHeight != 0) cHeight--;
-                                else if (iD == 1) // go right a segment
-                                    if (cWidth != ColorAmount) cWidth++;
-                                else if (iD == 2) // go down a segment
-                                    if (cHeight != ColorAmount) cHeight++;
-                                else // (iD == 3) // go left a segment
-                                    if (cWidth != 0) cWidth--;
+                                    else if (iD == 1) // go right a segment
+                                        if (cWidth != ColorAmount) cWidth++;
+                                        else if (iD == 2) // go down a segment
+                                            if (cHeight != ColorAmount) cHeight++;
+                                            else // (iD == 3) // go left a segment
+                                            if (cWidth != 0) cWidth--;
 
                                 iX = (int)(Decimal.Divide(plasmaWidth, ColorAmount) * cWidth); //go x many segments and try again
                                 iY = (int)(Decimal.Divide(plasmaHeight, ColorAmount) * cHeight); //go y many segments and try again
@@ -1075,6 +1134,7 @@ namespace RandomArtScreensaver
         }
         private void DoPlasmaBlend()
         {
+             if (IsDemo != 0) return;
             if (_screenBuffer == null) return;
             if (Settings.saverSettings == null) return;
 
@@ -1095,6 +1155,7 @@ namespace RandomArtScreensaver
         }
         private void BlendImages() //remove parameters
         {
+            if (IsDemo != 0) return;
             if (Drawing) return;
             if (_isBlending) return;
             if (_screenBuffer == null) return;
@@ -1220,17 +1281,6 @@ namespace RandomArtScreensaver
                 (c1.B + c2.B + c3.B + c4.B) / 4
             );
         }
-        unsafe private void DrawPixel(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color)
-        {
-            if (x >= 0 && x < Width && y >= 0 && y < Height)
-            {
-                int offset = y * stride + x * bytesPerPixel;
-                pixelPtr[offset] = color.B;
-                pixelPtr[offset + 1] = color.G;
-                pixelPtr[offset + 2] = color.R;
-                pixelPtr[offset + 3] = color.A;
-            }
-        }
         unsafe private void MirrorPlasma(byte* pixelPtr, int stride, int bytesPerPixel, int plasmaWidth, int plasmaHeight)
         {
             for (int x = 0; x < plasmaWidth; x++)
@@ -1251,20 +1301,6 @@ namespace RandomArtScreensaver
                     DrawPixel(pixelPtr, stride, bytesPerPixel, mirroredX, mirroredY, sourceColor);
                 }
             }
-        }
-        unsafe private Color GetPixelColor(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y)
-        {
-            Color rColor = new Color();
-            if (x >= 0 && x < Width && y >= 0 && y < Height)
-            {
-                int offset = y * stride + x * bytesPerPixel;
-                byte b = pixelPtr[offset];
-                byte g = pixelPtr[offset + 1];
-                byte r = pixelPtr[offset + 2];
-                byte a = pixelPtr[offset + 3];
-                rColor = Color.FromArgb(a, r, g, b);
-            }
-            return rColor;
         }
         #endregion
     }
