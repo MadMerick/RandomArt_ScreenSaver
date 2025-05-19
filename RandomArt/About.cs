@@ -279,7 +279,7 @@ namespace RandomArtScreensaver
 			lblVersion.Top = lblTitle.Top + lblTitle.Height + 8;
 			lblVersion.Left = lblTitle.Left;
 			lblVersion.Width = lblTitle.Width;
-			lblVersion.Text = "Version 2.0"; // Or some other default value
+			lblVersion.Text = "Version " + Program.Version; // Or some other default value
 			lblVersion.Height = lblTitle.Height;
 			lblTech.Left = lblVersion.Left;
 			lblTech.Top = lblVersion.Top + lblVersion.Height + 8;

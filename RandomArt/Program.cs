@@ -18,6 +18,8 @@ namespace RandomArtScreensaver
         public static bool Logging = false;
         public static bool IsTesting = false;
 
+        public static decimal Version = 2.2m;
+
         [STAThread]
         static void Main(string[] args)
         {
