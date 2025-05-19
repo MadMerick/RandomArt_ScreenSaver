@@ -24,9 +24,9 @@ namespace RandomArtScreensaver
         public List<ArtType> artTypes { get; set; } = new List<ArtType> {
             new ArtType(artType.Dots, 12, 10, true),//12, 100 - G
             new ArtType(artType.Grow, 12, 10, true),//12, 100 - G
-            new ArtType(artType.Scribble, 12, 100, true),//12, 500 - G
+            new ArtType(artType.Scribble, 12, 100, false),//12, 500 - G
             new ArtType(artType.Light, 13, 1000, false),//13, 1000 - G
-            new ArtType(artType.Weeds, 12, 500, true),//12, 500 - G
+            new ArtType(artType.Weeds, 12, 500, false),//12, 500 - G
             new ArtType(artType.Bubbles, 13, 1000, false),//13, 1000 - G
             new ArtType(artType.Warp, 13, 100 , false),//13, 500 - 
             new ArtType(artType.Plasma, 13, 5000, false)//13, 5000 - 

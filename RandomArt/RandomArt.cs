@@ -409,17 +409,7 @@ namespace RandomArtScreensaver
                         if (tries > 5) break;
 
                         // Directly set the pixel color in the bitmap data
-                        if (x >= 0 && x <= Width && y >= 0 && y <= Height)
-                        {
-                            int offset = y * stride + x * bytesPerPixel;
-                            if (offset >= 0 && offset < stride * _screenBuffer.Height)
-                            {
-                                pixelPtr[offset] = (byte)b;
-                                pixelPtr[offset + 1] = (byte)g;
-                                pixelPtr[offset + 2] = (byte)r;
-                                pixelPtr[offset + 3] = (byte)a;
-                            }
-                        }
+                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
                     }
                 }
             }
@@ -477,11 +467,7 @@ namespace RandomArtScreensaver
                                 if (currentAlpha == 0)
                                 {
                                     // Set the new pixel color
-                                    if (Settings.saverSettings.grow.Large)
-                                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
-                                    else
-                                        DrawPixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
-                                    break;
+                                    DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
                                 }
                             }
                         }
@@ -532,10 +518,7 @@ namespace RandomArtScreensaver
                 {
                     byte* pixelPtr = (byte*)ptr;
 
-                    if (Settings.saverSettings.dot.Large)
-                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
-                    else
-                        DrawPixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
+                    DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
                 }
             }
             finally
@@ -602,17 +585,7 @@ namespace RandomArtScreensaver
                         if (tries > 5) break;
 
                         // Directly set the pixel color in the bitmap data
-                        if (x >= 0 && x <= Width && y >= 0 && y <= Height)
-                        {
-                            int offset = y * stride + x * bytesPerPixel;
-                            if (offset >= 0 && offset < stride * _screenBuffer.Height)
-                            {
-                                pixelPtr[offset] = (byte)b;
-                                pixelPtr[offset + 1] = (byte)g;
-                                pixelPtr[offset + 2] = (byte)r;
-                                pixelPtr[offset + 3] = (byte)a;
-                            }
-                        }
+                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
                     }
                 }
             }
