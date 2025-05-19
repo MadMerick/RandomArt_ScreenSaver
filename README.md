@@ -4,7 +4,7 @@
 ![.NET](https://github.com/MadMerick/RandomArt_ScreenSaver/workflows/.NET/badge.svg)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/MadMerick/RandomArt_ScreenSaver)
 
-This project is a rewrite of an old screen saver created in 2004. The Random Art Screen Saver is a C# Windows Forms application that displays a rotating selection of procedurally generated visual art as a custom screen saver. It cycles through various artistic styles, each with its own unique parameters, creating a dynamic and ever-changing display on your screen.
+This project is a rewrite and modernization of an old screen saver created in 2004. The Random Art Screen Saver is a C# Windows Forms application that displays a rotating selection of procedurally generated visual art as a custom screen saver. It cycles through various artistic styles, each with its own unique parameters, creating a dynamic and ever-changing display on your screen.
 
 ## Art Styles & Settings
 
