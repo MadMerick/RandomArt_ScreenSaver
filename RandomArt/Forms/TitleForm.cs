@@ -1,14 +1,11 @@
 using System.Reflection;
-using System.Drawing;
-using System.IO;
 using System.ComponentModel;
-using System.Security.Cryptography.X509Certificates;
 
-namespace RandomArtScreensaver
+namespace RandomArtScreensaver.Forms
 {
-    public partial class TitleScreen : Form
+    public partial class TitleForm : Form
     {
-        public TitleScreen()
+        public TitleForm()
         {
             InitializeComponent();
             // Add your logo, maker, version information to labels or drawing

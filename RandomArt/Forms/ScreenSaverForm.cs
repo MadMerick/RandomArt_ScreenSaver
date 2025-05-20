@@ -1,21 +1,27 @@
-using System;
-using System.Drawing;
-using System.Windows.Forms;
-using Microsoft.Win32;
-using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
-namespace RandomArtScreensaver
+namespace RandomArtScreensaver.Forms
 {
-    public abstract class ScreenSaver : Form
+    public abstract class ScreenSaverForm : Form
     {
+        #region DLLImports
+        [DllImport("gdi32.dll")]
+        private static extern bool BitBlt(IntPtr hdcDest, int nXDest, int nYDest, int nWidth, int nHeight, IntPtr hdcSrc, int nXSrc, int nYSrc, uint dwRrop);
+        // Import GetDC and ReleaseDC functions from user32.dll
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetDC(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        private static extern int ReleaseDC(IntPtr hWnd, IntPtr hdc);
+        #endregion
+        #region Constants
+        private const uint SRCCOPY = 0x00CC0020;
+        #endregion
         private Point _mouseLocation;
         private bool _mouseMoved = false;
         public int IsDemo = 0; //0:Normal, 1:Demo, 2:Preview
         public Bitmap? _capturedBackground;
-        public ScreenSaver()
+        public ScreenSaverForm()
         {
             SetStyle(ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
@@ -113,15 +119,15 @@ namespace RandomArtScreensaver
             using (Graphics graphics = Graphics.FromImage(screenshot))
             {
                 // Get the device context of the screen
-                IntPtr hdcScreen = Settings.GetDC(IntPtr.Zero); // IntPtr.Zero represents the entire screen
+                IntPtr hdcScreen = GetDC(IntPtr.Zero); // IntPtr.Zero represents the entire screen
                 if (hdcScreen != IntPtr.Zero)
                 {
                     Application.DoEvents();
                     System.Threading.Thread.Sleep(1000);
                     // Copy the screen image to the bitmap
-                    Settings.BitBlt(graphics.GetHdc(), 0, 0, screenWidth, screenHeight, hdcScreen, 0, 0, Settings.SRCCOPY); // 0xCC0020 is the value for SRCCOPY
+                    BitBlt(graphics.GetHdc(), 0, 0, screenWidth, screenHeight, hdcScreen, 0, 0, SRCCOPY); // 0xCC0020 is the value for SRCCOPY
                     // Release the screen device context
-                    Settings.ReleaseDC(IntPtr.Zero, hdcScreen);
+                    ReleaseDC(IntPtr.Zero, hdcScreen);
                 }
                 else
                 {

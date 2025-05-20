@@ -1,20 +1,8 @@
-using System;
-using System.Drawing;
-using System.Windows.Forms;
-using Microsoft.Win32;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Windows.Forms.ComponentModel.Com2Interop;
-using System.Configuration;
-using System.Threading.Tasks;
 using System.Drawing.Imaging;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 
 namespace RandomArtScreensaver
 {
-    public class RandomArt : ScreenSaver
+    public class RandomArt : Forms.ScreenSaverForm
     {
         #region Static Methods for Screen Saver Functionality
         private Random _random = new Random();
@@ -45,49 +33,49 @@ namespace RandomArtScreensaver
             // 
             // tmrPlasma
             // 
-            ArtType? s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Plasma);
+            Entities.ArtType? s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Plasma);
             tmrPlasma.Interval = s != null ? s.Speed : 5000;
             tmrPlasma.Tick += tmrPlasma_Tick;
             // 
             // tmrBubbles
             // 
-            s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Bubbles);
+            s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Bubbles);
             tmrBubbles.Interval = s != null ? s.Speed : 500;
             tmrBubbles.Tick += tmrBubbles_Tick;
             // 
             // tmrLight
             // 
-            s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Light);
+            s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Light);
             tmrLight.Interval = s != null ? s.Speed : 500;
             tmrLight.Tick += tmrLight_Tick;
             // 
             // tmrDot
             // 
-            s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Dots);
+            s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Dots);
             tmrDot.Interval = s != null ? s.Speed : 1;
             tmrDot.Tick += tmrDot_Tick;
             // 
             // tmrWarp
             // 
-            s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Warp);
+            s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Warp);
             tmrWarp.Interval = s != null ? s.Speed : 500;
             tmrWarp.Tick += tmrWarp_Tick;
             // 
             // tmrWeeds
             // 
-            s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Weeds);
+            s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Weeds);
             tmrWeeds.Interval = s != null ? s.Speed : 500;
             tmrWeeds.Tick += tmrWeeds_Tick;
             // 
             // tmrScribble
             // 
-            s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Scribble);
+            s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Scribble);
             tmrScribble.Interval = s != null ? s.Speed : 500;
             tmrScribble.Tick += tmrScribble_Tick;
             // 
             // tmrGrow
             // 
-            s = Settings.saverSettings.artTypes.Find(o => o.Type == artType.Grow);
+            s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Grow);
             tmrGrow.Interval = s != null ? s.Speed : 10;
             tmrGrow.Tick += tmrGrow_Tick;    
         }
@@ -166,7 +154,7 @@ namespace RandomArtScreensaver
                 // Should not reach here if frequencies add up to 100
                 int randomNumber = _random.Next(100);
                 int cumulativeFrequency = 0;
-                foreach (ArtType _a in Settings.saverSettings.artTypes)
+                foreach (Entities.ArtType _a in Settings.saverSettings.artTypes)
                 {
                     cumulativeFrequency += _a.Percentage;
                     if (randomNumber < cumulativeFrequency)
@@ -192,37 +180,37 @@ namespace RandomArtScreensaver
                 _Pixels = new Color[Width + 1, Height + 1];
                 switch (_artType)
                 {
-                    case (int)artType.Grow:
+                    case (int)Entities.ArtTypeEnum.Grow:
                         SetUp();
                         tmrGrow.Start();
                         break;
-                    case (int)artType.Light:
+                    case (int)Entities.ArtTypeEnum.Light:
                         SetUp();
                         tmrLight.Start();
                         break;
-                    case (int)artType.Plasma:
+                    case (int)Entities.ArtTypeEnum.Plasma:
                         SetUp();
                         tmrPlasma.Start();
                         DoPlasma();
                         break;
-                    case (int)artType.Scribble:
+                    case (int)Entities.ArtTypeEnum.Scribble:
                         SetUp();
                         tmrScribble.Start();
                         break;
-                    case (int)artType.Bubbles:
+                    case (int)Entities.ArtTypeEnum.Bubbles:
                         SetUp();
                         tmrBubbles.Start();
                         break;
-                    case (int)artType.Warp:
+                    case (int)Entities.ArtTypeEnum.Warp:
                         SetUp();
                         WarpSetup();
                         tmrWarp.Start();
                         break;
-                    case (int)artType.Dots:
+                    case (int)Entities.ArtTypeEnum.Dots:
                         SetUp();
                         tmrDot.Start();
                         break;
-                    case (int)artType.Weeds:
+                    case (int)Entities.ArtTypeEnum.Weeds:
                         SetUp();
                         tmrWeeds.Start();
                         break;
