@@ -4,74 +4,6 @@ using System.Runtime.InteropServices;
 namespace RandomArtScreensaver
 {
     public static class Settings {
-        #region DLLImports
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        private static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
-        // Exported function for Windows to show the configuration dialog
-        [UnmanagedCallersOnly(EntryPoint = "ScreenSaverConfigureDialog", CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
-        public static bool ScreenSaverConfigureDialog(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam)
-        {
-            Settings.Log("ScreenSaverConfigureDialog");
-            if (message == WM_INITDIALOG)
-            {
-                Program.ShowSettingsForm();
-                return true;
-            }
-            return false;
-        }
-        // Exported function for Windows to run the screensaver
-        [UnmanagedCallersOnly(EntryPoint = "ScreenSaverProc", CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
-        public static IntPtr ScreenSaverProc(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam)
-        {
-            Settings.Log("ScreenSaverProc: " + message);
-            try
-            {
-                Settings.Log($"Started ScreenSaverProc: {hWnd}, {message}, {wParam}, {lParam}");
-                switch (message)
-                {
-                    case WM_CREATE:
-                        // Initialize your screensaver here
-                        Program.ShowTitleScreenAndRun();
-                        return IntPtr.Zero;
-                    case WM_DESTROY:
-                        // Clean up resources
-                        if (screensaverForms == null) return IntPtr.Zero; ;
-                        foreach (RandomArt scr in screensaverForms)
-                        {
-                            scr.Stop();
-                            scr.Close();
-                            scr.Dispose();
-                        }
-                        return IntPtr.Zero;
-                    case WM_MOUSEMOVE:
-                    case WM_KEYDOWN:
-                        // Exit the screensaver on mouse movement or key press
-                        if (screensaverForms == null) return IntPtr.Zero; ;
-                        foreach (RandomArt scr in screensaverForms)
-                        {
-                            if (scr.IsDemo != 1)
-                            {
-                                Application.Exit();
-                            }
-                        }
-                        return IntPtr.Zero;
-                    case WM_ERASEBKGND:
-                        return (IntPtr)1; // Indicate that we'll handle the background
-                    case WM_PAINT:
-                        // Your drawing logic here (likely within the RandomArt form)
-                        return IntPtr.Zero;
-                    default:
-                        return Settings.DefWindowProc(hWnd, message, wParam, lParam);
-                }
-            }
-            catch (Exception ex)
-            {
-                Settings.Log($"Exception in ScreenSaverProc: {ex.Message}");
-                Settings.Log($"Stack Trace: {ex.StackTrace}");
-                return IntPtr.Zero; // Or some appropriate error handling
-            }
-        }
-        #endregion
         #region Constants
         // Required constants and external functions
         private const uint WM_CREATE = 0x0001;
@@ -83,7 +15,7 @@ namespace RandomArtScreensaver
         private const uint WM_INITDIALOG = 0x0110;
         private const string SettingsFileName = "RandomArt.json";
         private const string FilePath = "\\Local\\RandomArt";
-        private const string logFileName = "RandomArt_log.log";
+        private const string logFileName = "RandomArt.log";
         #endregion
         public static int? All_artType = null;
         public static bool All_Alpha = false;
@@ -163,14 +95,14 @@ namespace RandomArtScreensaver
         }
         public static void Log(string message) {
             DirectoryInfo? sPath = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-                if (sPath == null) return;
-                string fullpath = sPath + FilePath;
-                if (!Directory.Exists(fullpath))
-                    Directory.CreateDirectory(fullpath);
-            string sFile = Path.Combine(FilePath, logFileName);
+            if (sPath == null) return;
+            string fullpath = sPath + FilePath;
+            if (!Directory.Exists(fullpath))
+                Directory.CreateDirectory(fullpath);
+            string sFile = Path.Combine(fullpath, logFileName);
             Console.WriteLine(message);
             if (Program.Logging) {
-                using (StreamWriter file = File.AppendText(sFile))
+                using (StreamWriter file = File.Exists(sFile) ? File.AppendText(sFile) : File.CreateText(sFile))
                 {
                     file.Write(DateTime.Now.ToShortDateString() + " - " + message);
                     file.Write(Environment.NewLine);

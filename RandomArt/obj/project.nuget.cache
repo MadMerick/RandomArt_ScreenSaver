@@ -1,13 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "hFOgUG+xIOU=",
+  "dgSpecHash": "SQAujeVsx0M=",
   "success": true,
   "projectFilePath": "C:\\Users\\PaulSpomer\\Documents\\Projects\\RA2\\RandomArt\\RandomArt.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\PaulSpomer\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.5\\microsoft.net.illink.tasks.9.0.5.nupkg.sha512",
     "C:\\Users\\PaulSpomer\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\PaulSpomer\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\9.0.5\\microsoft.netcore.app.runtime.win-x64.9.0.5.nupkg.sha512",
     "C:\\Users\\PaulSpomer\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\9.0.5\\microsoft.windowsdesktop.app.runtime.win-x64.9.0.5.nupkg.sha512",
-    "C:\\Users\\PaulSpomer\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\9.0.5\\microsoft.aspnetcore.app.runtime.win-x64.9.0.5.nupkg.sha512"
+    "C:\\Users\\PaulSpomer\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\9.0.5\\microsoft.aspnetcore.app.runtime.win-x64.9.0.5.nupkg.sha512",
+    "C:\\Users\\PaulSpomer\\.nuget\\packages\\microsoft.netcore.app.crossgen2.win-x64\\9.0.5\\microsoft.netcore.app.crossgen2.win-x64.9.0.5.nupkg.sha512"
   ],
   "logs": []
 }

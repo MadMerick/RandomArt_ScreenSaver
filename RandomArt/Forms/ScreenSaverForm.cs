@@ -19,8 +19,8 @@ namespace RandomArtScreensaver.Forms
         #endregion
         private Point _mouseLocation;
         private bool _mouseMoved = false;
-        public int IsDemo = 0; //0:Normal, 1:Demo, 2:Preview
         public Bitmap? _capturedBackground;
+        public static int? IsDemo = null; //0:Normal, 1:Demo, 2:Preview
         public ScreenSaverForm()
         {
             SetStyle(ControlStyles.UserPaint, true);
@@ -36,9 +36,20 @@ namespace RandomArtScreensaver.Forms
             {
                 if (Math.Abs(e.X - _mouseLocation.X) > 10 || Math.Abs(e.Y - _mouseLocation.Y) > 10)
                 {
-                    Settings.Log("Closing on mouse move");
-                    if (IsDemo == 0) Application.Exit();
-                    //else Dispose();
+                    Settings.Log("Closing on mouse move - IsDemo=" + IsDemo);
+                    if (IsDemo == 0)
+                    {
+                        Dispose();
+                        Application.Exit();
+                    }
+                    else if (IsDemo == 1)
+                    {
+                        if (Settings.screensaverForms == null) return;
+                        foreach (RandomArt r in Settings.screensaverForms)
+                        {
+                            r.Dispose();
+                        }
+                    }
                 }
             }
             _mouseMoved = true;
@@ -46,27 +57,50 @@ namespace RandomArtScreensaver.Forms
         }
         protected override void OnMouseClick(MouseEventArgs e)
         {
-            Settings.Log("Closing on mouse click");
-            if (IsDemo == 0) Application.Exit();
-            //else Dispose();
+            Settings.Log("Closing on mouse click - IsDemo=" + IsDemo);
+            if (IsDemo == 0)
+            {
+                Dispose();
+                Application.Exit();
+            }
+            else if (IsDemo == 1)
+            {
+                if (Settings.screensaverForms == null) return;
+                foreach (RandomArt r in Settings.screensaverForms)
+                {
+                    r.Dispose();
+                }
+            }
             base.OnMouseClick(e);
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            Settings.Log("Closing on mouse key down");
-            if (IsDemo == 0) Application.Exit();
-            //else Dispose();
+            Settings.Log("Closing on key down - IsDemo=" + IsDemo);
+            if (IsDemo == 0)
+            {
+                Dispose();
+                Application.Exit();
+            }
+            else if (IsDemo == 1)
+            {
+                if (Settings.screensaverForms == null) return;
+                foreach (RandomArt r in Settings.screensaverForms)
+                {
+                    r.Dispose();
+                }
+            }
             base.OnKeyDown(e);
         }
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            Settings.Log("OnLoad - IsDemo=" + IsDemo);
             _mouseLocation = Control.MousePosition;
             if (IsDemo == 0) Cursor.Hide();
         }
         protected override void OnClosing(CancelEventArgs e)
         {
-            Settings.Log("Closing.");
+            Settings.Log("Closing. IsDemo=" + IsDemo);
             if (Settings.saverSettings != null) {
                 if (Settings.saverSettings.setWallpaper) {
                     Settings.SavePicture(this);

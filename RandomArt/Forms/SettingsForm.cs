@@ -1447,7 +1447,7 @@ namespace RandomArtScreensaver.Forms
                 if (Settings.saverSettings == null) return;
                 Settings.screensaverForms = new List<RandomArt>();
                 Rectangle parentRect = Picture1.ClientRectangle;
-                randomArt = new RandomArt(parentRect, 1); // Pass parent rectangle
+                randomArt = new RandomArt(parentRect, 2); // Pass parent rectangle
                 ArtTypeEnum? s = null;
                 if (lstTypes.SelectedItems.Count > 0) 
                     if (Enum.TryParse<ArtTypeEnum>(lstTypes.SelectedItems[0].Text, out ArtTypeEnum parsedType))

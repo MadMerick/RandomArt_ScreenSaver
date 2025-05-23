@@ -63,25 +63,6 @@
         "${workspaceFolder}/RA2.sln"
       ],
       "problemMatcher": "$msCompile"
-    },
-    {
-      "label": "publish_debug_randomart", // A new, descriptive label
-      "command": "dotnet",
-      "type": "process",
-      "args": [
-          "publish",
-          "${workspaceFolder}/RandomArt/RandomArt.csproj", // Target the specific project
-          "--configuration", "Debug",                       // Ensure it's a debug build
-          "--runtime", "win-x64",                           // Explicitly set runtime for self-contained
-          "--self-contained", "true",                       // Explicitly make it self-contained
-          "--output", "${workspaceFolder}/RandomArt/bin/Debug/net9.0-windows7.0/win-x64/", // **Crucial: Exact output path**
-          "/property:GenerateFullPaths=true",
-          "/consoleloggerparameters:NoSummary;ForceNoAlign"
-      ],
-      "problemMatcher": "$msCompile",
-      "group": {
-          "kind": "build" // No "isDefault: true" here, we'll call it explicitly
-      }
     }
   ]
-  }
+}

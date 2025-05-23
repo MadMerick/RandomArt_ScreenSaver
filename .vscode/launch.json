@@ -8,9 +8,9 @@
             "name": ".NET Core Launch (console)",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "publish_debug_randomart",
+            "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/RandomArt/bin/Debug/net9.0-windows7.0/win-x64/RandomArt.exe",
+            "program": "${workspaceFolder}/RandomArt/bin/Debug/net9.0-windows/win-x64/RandomArt.exe",
             "args": [],
             "cwd": "${workspaceFolder}/RandomArt",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
