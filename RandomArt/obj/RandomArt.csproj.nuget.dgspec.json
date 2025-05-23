@@ -13,18 +13,25 @@
         "packagesPath": "C:\\Users\\PaulSpomer\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\PaulSpomer\\Documents\\Projects\\RA2\\RandomArt\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\PaulSpomer\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\PaulSpomer\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net9.0-windows"
+          "net9.0-windows7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0-windows7.0": {
-            "targetAlias": "net9.0-windows",
+            "targetAlias": "net9.0-windows7.0",
             "projectReferences": {}
           }
         },
@@ -38,21 +45,15 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.200"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0-windows7.0": {
-          "targetAlias": "net9.0-windows",
+          "targetAlias": "net9.0-windows7.0",
           "dependencies": {
-            "Microsoft.NET.ILLink.Tasks": {
-              "suppressParent": "All",
+            "Newtonsoft.Json": {
               "target": "Package",
-              "version": "[9.0.4, )",
-              "autoReferenced": true
-            },
-            "UnmanagedExports": {
-              "target": "Package",
-              "version": "[1.2.7, )"
+              "version": "[13.0.3, )"
             }
           },
           "imports": [
@@ -69,19 +70,15 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[9.0.4, 9.0.4]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Crossgen2.win-x64",
-              "version": "[9.0.4, 9.0.4]"
+              "version": "[9.0.5, 9.0.5]"
             },
             {
               "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[9.0.4, 9.0.4]"
+              "version": "[9.0.5, 9.0.5]"
             },
             {
               "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[9.0.4, 9.0.4]"
+              "version": "[9.0.5, 9.0.5]"
             }
           ],
           "frameworkReferences": {
@@ -92,7 +89,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {

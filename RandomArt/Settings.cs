@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Runtime.InteropServices;
-using RGiesecke.DllExport;
 
 namespace RandomArtScreensaver
 {
@@ -9,7 +8,7 @@ namespace RandomArtScreensaver
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         private static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
         // Exported function for Windows to show the configuration dialog
-        [DllExport("ScreenSaverConfigureDialog", CallingConvention = CallingConvention.StdCall)]
+        [UnmanagedCallersOnly(EntryPoint = "ScreenSaverConfigureDialog", CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
         public static bool ScreenSaverConfigureDialog(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam)
         {
             Settings.Log("ScreenSaverConfigureDialog");
@@ -21,7 +20,7 @@ namespace RandomArtScreensaver
             return false;
         }
         // Exported function for Windows to run the screensaver
-        [DllExport("ScreenSaverProc", CallingConvention = CallingConvention.StdCall)]
+        [UnmanagedCallersOnly(EntryPoint = "ScreenSaverProc", CallConvs = new Type[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
         public static IntPtr ScreenSaverProc(IntPtr hWnd, uint message, IntPtr wParam, IntPtr lParam)
         {
             Settings.Log("ScreenSaverProc: " + message);
@@ -116,7 +115,7 @@ namespace RandomArtScreensaver
                 if (File.Exists(sFile))
                 {
                     string jsonString = File.ReadAllText(sFile);
-                    Entities.SaverSettings? settings = JsonSerializer.Deserialize<Entities.SaverSettings>(jsonString);
+                    Entities.SaverSettings? settings = Newtonsoft.Json.JsonConvert.DeserializeObject<Entities.SaverSettings>(jsonString);
                     if (settings != null) saverSettings = settings;
                 }
                 else
@@ -140,7 +139,7 @@ namespace RandomArtScreensaver
                 if (!Directory.Exists(fullpath))
                     Directory.CreateDirectory(fullpath);
                 string sFile = Path.Combine(fullpath, SettingsFileName);
-                string jsonString = JsonSerializer.Serialize(saverSettings, new JsonSerializerOptions { WriteIndented = true });
+                string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(saverSettings);
                 File.WriteAllText(sFile, jsonString);
             }
             catch (Exception ex)

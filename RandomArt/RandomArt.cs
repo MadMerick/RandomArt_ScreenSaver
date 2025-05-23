@@ -456,6 +456,7 @@ namespace RandomArtScreensaver
                                 {
                                     // Set the new pixel color
                                     DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
+                                    break;
                                 }
                             }
                         }
