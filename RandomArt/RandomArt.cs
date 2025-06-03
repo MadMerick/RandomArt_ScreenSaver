@@ -1074,22 +1074,6 @@ namespace RandomArtScreensaver
                 if (newBmpData != null)
                     _newScreenBuffer.UnlockBits(newBmpData);
             }
-            if (MirrorType == false) {
-                //  Draw the cropped image, stretched to fill the original dimensions
-                int cropWidth = _newScreenBuffer.Width - (int)Decimal.Divide(_newScreenBuffer.Width, ColorAmount);
-                int cropHeight = _newScreenBuffer.Height - (int)Decimal.Divide(_newScreenBuffer.Height, ColorAmount);
-                if (cropWidth > 0 && cropHeight > 0)
-                {
-                    Rectangle sourceRect = new Rectangle(0, 0, cropWidth, cropHeight);
-                    Rectangle destRect = new Rectangle(0, 0, _newScreenBuffer.Width, _newScreenBuffer.Height);
-
-                    using (Graphics g = Graphics.FromImage(_newScreenBuffer))  //draw onto the screen buffer
-                    {
-                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor; // Or use another mode
-                        g.DrawImage(_newScreenBuffer, destRect, sourceRect, GraphicsUnit.Pixel);
-                    }
-                }
-            }
             _blendPercentage = 0;
             Drawing = false;
             Application.DoEvents();
@@ -1218,6 +1202,10 @@ namespace RandomArtScreensaver
             DrawPixel(pixelPtr, stride, bytesPerPixel, left, midY, cMidLeft);
             DrawPixel(pixelPtr, stride, bytesPerPixel, width, midY, cMidRight);
             DrawPixel(pixelPtr, stride, bytesPerPixel, midX, midY, cMiddle);
+
+            //_screenBuffer = (Bitmap)_newScreenBuffer.Clone();
+            //Invalidate();
+            //Application.DoEvents();
 
             //Call the recursive function Plasma for with the bounds of the
             //sub-rectangles as the left, top, width, and height parameters.

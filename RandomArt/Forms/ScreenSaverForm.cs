@@ -20,7 +20,7 @@ namespace RandomArtScreensaver.Forms
         private Point _mouseLocation;
         private bool _mouseMoved = false;
         public Bitmap? _capturedBackground;
-        public static int? IsDemo = null; //0:Normal, 1:Demo, 2:Preview
+        public static int? IsDemo = null; //0:Normal, 1:Demo, 2:Preview, 3:Demo preview
         public ScreenSaverForm()
         {
             SetStyle(ControlStyles.UserPaint, true);
@@ -111,7 +111,7 @@ namespace RandomArtScreensaver.Forms
                 _capturedBackground.Dispose();
                 _capturedBackground = null;
             }
-            if (IsDemo != 1) Application.Exit();
+            if (IsDemo == 0 || IsDemo == 2) Application.Exit();
             base.OnClosing(e);
         }
         public void SetBackColor() {
