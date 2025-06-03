@@ -10,6 +10,7 @@ namespace RandomArtScreensaver
         private bool Drawing = false;
         private bool _alpha = true;
         public System.Windows.Forms.Timer tmrPlasma = new System.Windows.Forms.Timer();
+        public System.Windows.Forms.Timer tmrPlasmaBlend = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrDot = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrWarp = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrWeeds = new System.Windows.Forms.Timer();
@@ -20,11 +21,13 @@ namespace RandomArtScreensaver
         int Angles = 0;
         bool MirrorType;
         public int? _artType = null;
-        Color[,] _Pixels = new Color[1,1];
-        Bitmap? _screenBuffer;
+        private Color[,] _Pixels = new Color[1,1];
+        private Bitmap? _screenBuffer;
         private Bitmap? _newScreenBuffer;
+        private Bitmap? _originalBaseBufferForFade;
         private bool _isBlending = false;
-        private float _blendPercentage = 0f;
+        private int _currentFadeStep = 0;
+        private int _numberOfFadeSteps = 10;
         public void InitializeComponent()
         {
             // Initialize default art type configurations
@@ -37,6 +40,12 @@ namespace RandomArtScreensaver
             Entities.ArtType? s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Plasma);
             tmrPlasma.Interval = s != null ? s.Speed : 5000;
             tmrPlasma.Tick += tmrPlasma_Tick;
+            // 
+            // tmrPlasmaBlend
+            // 
+            tmrPlasmaBlend.Interval = Settings.saverSettings.plasma.TransitionSpeed;
+            tmrPlasmaBlend.Tick += tmrPlasmaBlend_Tick;
+            _numberOfFadeSteps = Settings.saverSettings.plasma.TransitionCount;
             // 
             // tmrBubbles
             // 
@@ -78,7 +87,7 @@ namespace RandomArtScreensaver
             // 
             s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Grow);
             tmrGrow.Interval = s != null ? s.Speed : 10;
-            tmrGrow.Tick += tmrGrow_Tick;    
+            tmrGrow.Tick += tmrGrow_Tick;
         }
         public RandomArt(Rectangle parentRect, int isDemo)
         {
@@ -127,6 +136,10 @@ namespace RandomArtScreensaver
         private void tmrPlasma_Tick(object? sender, EventArgs e)
         {
             DoPlasma();
+        }
+        private void tmrPlasmaBlend_Tick(object? sender, EventArgs e)
+        {
+            DoPlasmaBlend();
         }
         #endregion
         #region ScreenSaver Implementation
@@ -1074,102 +1087,73 @@ namespace RandomArtScreensaver
                 if (newBmpData != null)
                     _newScreenBuffer.UnlockBits(newBmpData);
             }
-            _blendPercentage = 0;
             Drawing = false;
             Application.DoEvents();
-            DoPlasmaBlend();
+            tmrPlasma.Stop();
+            _originalBaseBufferForFade = (Bitmap)_screenBuffer.Clone();
+            _currentFadeStep = 0;
+            tmrPlasmaBlend.Start();
         }
         private void DoPlasmaBlend()
         {
-             if (IsDemo != 0) return;
-            if (_screenBuffer == null) return;
-            if (Settings.saverSettings == null) return;
-
-            int inc = Settings.saverSettings.plasma.Transition;
-            for (int i = 0; i <= inc; i ++) {
-                _blendPercentage = (float)Decimal.Divide(i, inc); // Increment blend
-                BlendImages();
-                Thread.Sleep(50);
-                Application.DoEvents();
-            }
-            
-
-            if (_blendPercentage >= 1.0f)
+            if (_screenBuffer == null || _originalBaseBufferForFade == null || _newScreenBuffer == null) return;
+            if (_currentFadeStep > _numberOfFadeSteps)
             {
-                _screenBuffer = _newScreenBuffer;
-                Invalidate(); //show final image
+                // Fade complete
+                tmrPlasmaBlend.Stop();
+
+                // Dispose of the temporary original base buffer
+                _originalBaseBufferForFade?.Dispose();
+                _originalBaseBufferForFade = null;
+
+                this.Invalidate();
+
+                tmrPlasma.Start();
+                return;
             }
-        }
-        private void BlendImages() //remove parameters
-        {
-            if (IsDemo != 0) return;
-            if (Drawing) return;
-            if (_isBlending) return;
-            if (_screenBuffer == null) return;
-            if (_newScreenBuffer == null) return;
-            _isBlending = true;
-            BitmapData? bmpData = null;
-            BitmapData? newBmpData = null;
-            try
+
+            float alpha = (float)_currentFadeStep / _numberOfFadeSteps;
+
+            // Create a temporary bitmap for this step's rendering
+            // It's crucial to create a new bitmap for each step or clear and redraw onto one,
+            // otherwise, you'll accumulate the alpha blending.
+            Bitmap tempBuffer = new Bitmap(_screenBuffer.Width, _screenBuffer.Height, PixelFormat.Format32bppArgb);
+
+            using (Graphics g = Graphics.FromImage(tempBuffer))
             {
-                bmpData = _screenBuffer.LockBits(new Rectangle(0, 0, _screenBuffer.Width, _screenBuffer.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-                IntPtr ptr = bmpData.Scan0;
-                int bytesPerPixel1 = Image.GetPixelFormatSize(_screenBuffer.PixelFormat) / 8;
-                int stride1 = bmpData.Stride;
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
 
-                newBmpData = _newScreenBuffer.LockBits(new Rectangle(0, 0, _newScreenBuffer.Width, _newScreenBuffer.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                IntPtr newPtr = newBmpData.Scan0;
-                int bytesPerPixel2 = Image.GetPixelFormatSize(_newScreenBuffer.PixelFormat) / 8;
-                int stride2 = newBmpData.Stride;
+                // 1. Draw the original base _screenBuffer state (before fading started)
+                // This ensures _newScreenBuffer is blended onto a clean, stable base.
+                g.DrawImage(_originalBaseBufferForFade, 0, 0, _originalBaseBufferForFade.Width, _originalBaseBufferForFade.Height);
 
-                unsafe
-                {
-                    byte* ptr1 = (byte*)ptr;
-                    byte* ptr2 = (byte*)newPtr;
+                // 2. Prepare ImageAttributes for alpha blending _newScreenBuffer
+                ColorMatrix cm = new ColorMatrix();
+                cm.Matrix33 = alpha; // Set the overall alpha for the top bitmap
 
-                    for (int y = 0; y < Height; y++)
-                    {
-                        byte* row1 = ptr1 + (y * stride1);
-                        byte* row2 = ptr2 + (y * stride2);
-                        for (int x = 0; x < Width; x++)
-                        {
-                            byte* pixel1 = row1 + (x * bytesPerPixel1);
-                            byte* pixel2 = row2 + (x * bytesPerPixel2);
+                ImageAttributes ia = new ImageAttributes();
+                ia.SetColorMatrix(cm, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
 
-                            byte a1 = pixel1[3];
-                            byte r1 = pixel1[2];
-                            byte g1 = pixel1[1];
-                            byte b1 = pixel1[0];
-
-                            byte a2 = pixel2[3];
-                            byte r2 = pixel2[2];
-                            byte g2 = pixel2[1];
-                            byte b2 = pixel2[0];
-
-                            // Blend the colors
-                            byte a = (byte)((a1 * (1 - _blendPercentage)) + (a2 * _blendPercentage));
-                            byte r = (byte)((r1 * (1 - _blendPercentage)) + (r2 * _blendPercentage));
-                            byte g = (byte)((g1 * (1 - _blendPercentage)) + (g2 * _blendPercentage));
-                            byte b = (byte)((b1 * (1 - _blendPercentage)) + (b2 * _blendPercentage));
-
-                            pixel1[0] = b;
-                            pixel1[1] = g;
-                            pixel1[2] = r;
-                            pixel1[3] = a;
-                        }
-                    }
-                }
+                // 3. Draw _newScreenBuffer with the calculated alpha onto the temporary buffer
+                g.DrawImage(_newScreenBuffer,
+                            new Rectangle(0, 0, _newScreenBuffer.Width, _newScreenBuffer.Height),
+                            0, 0, _newScreenBuffer.Width, _newScreenBuffer.Height,
+                            GraphicsUnit.Pixel,
+                            ia);
             }
-            finally
-            {
-                if (bmpData != null)
-                    _screenBuffer.UnlockBits(bmpData);
-                if (newBmpData != null)
-                    _newScreenBuffer.UnlockBits(newBmpData);
-            }
-            _isBlending = false;
-            Application.DoEvents();
-            Refresh(); // Trigger repaint
+
+            // Now, update _screenBuffer with the newly rendered frame
+            // Dispose the old _screenBuffer if it's not the same instance as _originalBaseBufferForFade
+            _screenBuffer?.Dispose();
+            _screenBuffer = tempBuffer; // _screenBuffer now holds the current fade state
+
+            // Request a repaint of the control, which will use the updated _screenBuffer
+            Invalidate();
+
+            _currentFadeStep++;
         }
         unsafe private void PlasmaDetails(byte* pixelPtr, int stride, int bytesPerPixel, int left, int top, int width, int height, Color[,] templatePixels)
         {

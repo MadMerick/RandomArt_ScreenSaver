@@ -3,7 +3,7 @@ namespace RandomArtScreensaver.Entities
     public class SaverSettings
     {
         public bool setWallpaper { get; set; } = false;
-        public bool UseBack { get; set; } = false;
+        public bool UseBack { get; set; } = false; //todo
         public bool AllScreens { get; set; } = false;
         public Types.Warp warp { get; set; } = new Types.Warp();
         public Types.Plasma plasma { get; set; } = new Types.Plasma();

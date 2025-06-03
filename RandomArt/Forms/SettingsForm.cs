@@ -12,12 +12,14 @@ namespace RandomArtScreensaver.Forms
         #region Controls
         private IContainer components = new Container();
         private ToolTip ToolTip1 = new ToolTip();
+        private Label lblPlasmaTransistionSpeedMS = new Label();
         private Button cmdPreview = new Button();
         private Button cmdDefault = new Button();
         private Button cmdAbout = new Button();
         private CheckBox chkPlasmaVariationRand = new CheckBox();
         private CheckBox chkPlasmaColorRand = new CheckBox();
         private TrackBar sldPlasmaVariation = new TrackBar();
+        private TrackBar sldPlasmaTransitionCount = new TrackBar();
         private TrackBar sldPlasmaColor = new TrackBar();
         private RadioButton _optPlasma_2 = new RadioButton();
         private RadioButton _optPlasma_1 = new RadioButton();
@@ -41,8 +43,9 @@ namespace RandomArtScreensaver.Forms
         private Label lblWarp = new Label();
         private Label lblWarpSpeed = new Label();
         private TrackBar sldWarpSpeed = new TrackBar();
-        private Label lblPlasmaTransistion = new Label();
-        private TextBox txtPlasmaTransition = new TextBox();
+        private Label lblPlasmaTransistionSpeed = new Label();
+        private Label lblPlasmaTransitionCount = new Label();
+        private TextBox txtPlasmaTransitionSpeed = new TextBox();
         private GroupBox frmSettings = new GroupBox();
         private GroupBox frmOptions = new GroupBox();
         private Button cmdCancel = new Button();
@@ -88,6 +91,7 @@ namespace RandomArtScreensaver.Forms
             cmdAbout = new Button();
             frmSettings = new GroupBox();
             sldPlasmaVariation = new TrackBar();
+            sldPlasmaTransitionCount = new TrackBar();
             sldPlasmaColor = new TrackBar();
             lblLightTrans = new Label();
             lblLightCenter = new Label();
@@ -111,8 +115,10 @@ namespace RandomArtScreensaver.Forms
             lblWarp = new Label();
             lblWarpSpeed = new Label();
             sldWarpSpeed = new TrackBar();
-            lblPlasmaTransistion = new Label();
-            txtPlasmaTransition = new TextBox();
+            lblPlasmaTransistionSpeed = new Label();
+            lblPlasmaTransistionSpeedMS = new Label();
+            lblPlasmaTransitionCount = new Label();
+            txtPlasmaTransitionSpeed = new TextBox();
             cmdCancel = new Button();
             cmdSave = new Button();
             frmBackGround = new GroupBox();
@@ -138,6 +144,7 @@ namespace RandomArtScreensaver.Forms
             ((ISupportInitialize)Picture1).BeginInit();
             frmSettings.SuspendLayout();
             ((ISupportInitialize)sldPlasmaVariation).BeginInit();
+            ((ISupportInitialize)sldPlasmaTransitionCount).BeginInit();
             ((ISupportInitialize)sldPlasmaColor).BeginInit();
             ((ISupportInitialize)sldAngles).BeginInit();
             frmBackGround.SuspendLayout();
@@ -273,6 +280,7 @@ namespace RandomArtScreensaver.Forms
             frmSettings.Controls.Add(chkPlasmaVariationRand);
             frmSettings.Controls.Add(chkPlasmaColorRand);
             frmSettings.Controls.Add(sldPlasmaVariation);
+            frmSettings.Controls.Add(sldPlasmaTransitionCount);
             frmSettings.Controls.Add(sldPlasmaColor);
             frmSettings.Controls.Add(_optPlasma_2);
             frmSettings.Controls.Add(_optPlasma_1);
@@ -288,8 +296,9 @@ namespace RandomArtScreensaver.Forms
             frmSettings.Controls.Add(lblWarp);
             frmSettings.Controls.Add(lblWarpSpeed);
             frmSettings.Controls.Add(sldWarpSpeed);
-            frmSettings.Controls.Add(lblPlasmaTransistion);
-            frmSettings.Controls.Add(txtPlasmaTransition);
+            frmSettings.Controls.Add(lblPlasmaTransitionCount);
+            frmSettings.Controls.Add(lblPlasmaTransistionSpeed);
+            frmSettings.Controls.Add(txtPlasmaTransitionSpeed);
             frmSettings.Controls.Add(lblLightCenter);
             frmSettings.Controls.Add(sldLightCenter);
             frmSettings.Controls.Add(lblLightTrans);
@@ -300,6 +309,7 @@ namespace RandomArtScreensaver.Forms
             frmSettings.Controls.Add(sldBubbleTrans);
             frmSettings.Controls.Add(lblScribbleLen);
             frmSettings.Controls.Add(sldScribbleLen);
+            frmSettings.Controls.Add(lblPlasmaTransistionSpeedMS);
             frmSettings.ForeColor = SystemColors.ControlText;
             frmSettings.Location = new Point(480, 60);
             frmSettings.Name = "frmSettings";
@@ -321,6 +331,19 @@ namespace RandomArtScreensaver.Forms
             sldPlasmaVariation.Cursor = System.Windows.Forms.Cursors.Hand;
             sldPlasmaVariation.ValueChanged += sldPlasmaVariation_ValueChanged;
             sldPlasmaVariation.TickStyle = TickStyle.None;
+            // 
+            // sldPlasmaTransitionCount
+            // 
+            sldPlasmaTransitionCount.Location = new Point(10, 192);
+            sldPlasmaTransitionCount.Maximum = 100;
+            sldPlasmaTransitionCount.Minimum = 1;
+            sldPlasmaTransitionCount.Name = "sldPlasmaTransitionCount";
+            sldPlasmaTransitionCount.Size = new Size(17, 45);
+            sldPlasmaTransitionCount.TabIndex = 11;
+            ToolTip1.SetToolTip(sldPlasmaTransitionCount, "The count of transition sequances to display");
+            sldPlasmaTransitionCount.Cursor = System.Windows.Forms.Cursors.Hand;
+            sldPlasmaTransitionCount.ValueChanged += sldPlasmaTransitionCount_ValueChanged;
+            sldPlasmaTransitionCount.TickStyle = TickStyle.None;
             // 
             // sldLightCenter
             // 
@@ -448,21 +471,21 @@ namespace RandomArtScreensaver.Forms
             txtSpeed.LostFocus += txtSpeed_TextChanged;
             ToolTip1.SetToolTip(txtSpeed, "The frequancy of refreshing the art. Caution: changing this may cause latency issues.");
             // 
-            // txtPlasmaTransition
+            // txtPlasmaTransitionSpeed
             // 
-            txtPlasmaTransition.AcceptsReturn = true;
-            txtPlasmaTransition.BackColor = SystemColors.Window;
-            txtPlasmaTransition.Cursor = Cursors.IBeam;
-            txtPlasmaTransition.ForeColor = SystemColors.WindowText;
-            txtPlasmaTransition.Location = new Point(48, 24);
-            txtPlasmaTransition.MaxLength = 0;
-            txtPlasmaTransition.Name = "txtPlasmaTransition";
-            txtPlasmaTransition.RightToLeft = RightToLeft.No;
-            txtPlasmaTransition.Size = new Size(57, 20);
-            txtPlasmaTransition.TabIndex = 13;
-            txtPlasmaTransition.Cursor = System.Windows.Forms.Cursors.IBeam;
-            txtPlasmaTransition.LostFocus += txtPlasmaTransition_TextChanged;
-            ToolTip1.SetToolTip(txtPlasmaTransition, "The spee to transition between scenes. Caution: changing this may cause latency issues.");
+            txtPlasmaTransitionSpeed.AcceptsReturn = true;
+            txtPlasmaTransitionSpeed.BackColor = SystemColors.Window;
+            txtPlasmaTransitionSpeed.Cursor = Cursors.IBeam;
+            txtPlasmaTransitionSpeed.ForeColor = SystemColors.WindowText;
+            txtPlasmaTransitionSpeed.Location = new Point(48, 24);
+            txtPlasmaTransitionSpeed.MaxLength = 0;
+            txtPlasmaTransitionSpeed.Name = "txtPlasmaTransitionSpeed";
+            txtPlasmaTransitionSpeed.RightToLeft = RightToLeft.No;
+            txtPlasmaTransitionSpeed.Size = new Size(57, 20);
+            txtPlasmaTransitionSpeed.TabIndex = 13;
+            txtPlasmaTransitionSpeed.Cursor = System.Windows.Forms.Cursors.IBeam;
+            txtPlasmaTransitionSpeed.LostFocus += txtPlasmaTransition_TextChanged;
+            ToolTip1.SetToolTip(txtPlasmaTransitionSpeed, "The speed to transition between scenes. Caution: changing this may cause latency issues.");
             // 
             // chkWarpSmooth
             // 
@@ -654,17 +677,29 @@ namespace RandomArtScreensaver.Forms
             lblBubbleTrans.Text = "Transparency:";
             lblBubbleTrans.TextAlign = ContentAlignment.TopCenter;
             // 
-            // lblPlasmaTransistion
+            // lblPlasmaTransistionSpeed
             // 
-            lblPlasmaTransistion.BackColor = Color.Transparent;
-            lblPlasmaTransistion.ForeColor = SystemColors.ControlText;
-            lblPlasmaTransistion.Location = new Point(8, 24);
-            lblPlasmaTransistion.Name = "lblPlasmaTransistion";
-            lblPlasmaTransistion.RightToLeft = RightToLeft.No;
-            lblPlasmaTransistion.Size = new Size(33, 17);
-            lblPlasmaTransistion.TabIndex = 33;
-            lblPlasmaTransistion.Text = "Transistion:";
-            lblPlasmaTransistion.TextAlign = ContentAlignment.TopCenter;
+            lblPlasmaTransistionSpeed.BackColor = Color.Transparent;
+            lblPlasmaTransistionSpeed.ForeColor = SystemColors.ControlText;
+            lblPlasmaTransistionSpeed.Location = new Point(8, 24);
+            lblPlasmaTransistionSpeed.Name = "lblPlasmaTransistionSpeed";
+            lblPlasmaTransistionSpeed.RightToLeft = RightToLeft.No;
+            lblPlasmaTransistionSpeed.Size = new Size(33, 17);
+            lblPlasmaTransistionSpeed.TabIndex = 33;
+            lblPlasmaTransistionSpeed.Text = "Transistion Speed:";
+            lblPlasmaTransistionSpeed.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // lblPlasmaTransitionCount
+            // 
+            lblPlasmaTransitionCount.BackColor = Color.Transparent;
+            lblPlasmaTransitionCount.ForeColor = SystemColors.ControlText;
+            lblPlasmaTransitionCount.Location = new Point(8, 24);
+            lblPlasmaTransitionCount.Name = "lblPlasmaTransitionCount";
+            lblPlasmaTransitionCount.RightToLeft = RightToLeft.No;
+            lblPlasmaTransitionCount.Size = new Size(33, 17);
+            lblPlasmaTransitionCount.TabIndex = 33;
+            lblPlasmaTransitionCount.Text = "Transition Count:";
+            lblPlasmaTransitionCount.TextAlign = ContentAlignment.TopCenter;
             // 
             // cmdCancel
             // 
@@ -906,6 +941,19 @@ namespace RandomArtScreensaver.Forms
             txtListEdit.KeyPress += txtListEdit_KeyPressed;
             ToolTip1.SetToolTip(txtListEdit, "Set how frequant this art type will be selected");
             // 
+            // lblPlasmaTransistionSpeedMS
+            // 
+            lblPlasmaTransistionSpeedMS.BackColor = Color.Transparent;
+            lblPlasmaTransistionSpeedMS.ForeColor = SystemColors.ControlText;
+            lblPlasmaTransistionSpeedMS.Location = new Point(8, 24);
+            lblPlasmaTransistionSpeedMS.Name = "lblPlasmaTransistionSpeedMS";
+            lblPlasmaTransistionSpeedMS.RightToLeft = RightToLeft.No;
+            lblPlasmaTransistionSpeedMS.Size = new Size(33, 17);
+            lblPlasmaTransistionSpeedMS.TabIndex = 33;
+            lblPlasmaTransistionSpeedMS.Text = "ms";
+            lblPlasmaTransistionSpeedMS.TextAlign = ContentAlignment.TopCenter;
+            lblPlasmaTransistionSpeedMS.BringToFront();
+            // 
             // lstTypes
             // 
             lstTypes.Columns.AddRange(new ColumnHeader[] { clhType, clhPercentage });
@@ -978,6 +1026,7 @@ namespace RandomArtScreensaver.Forms
             frmSettings.ResumeLayout(false);
             frmSettings.PerformLayout();
             ((ISupportInitialize)sldPlasmaVariation).EndInit();
+            ((ISupportInitialize)sldPlasmaTransitionCount).EndInit();
             ((ISupportInitialize)sldPlasmaColor).EndInit();
             ((ISupportInitialize)sldAngles).EndInit();
             frmBackGround.ResumeLayout(false);
@@ -1068,14 +1117,6 @@ namespace RandomArtScreensaver.Forms
             sldBubbleCenter.Left = lblBubbleCenter.Left + lblBubbleCenter.Width + 4;
             sldBubbleCenter.Top = lblBubbleCenter.Top;
             sldBubbleCenter.Width = frmSettings.Width - (sldBubbleCenter.Left + 8);
-            lblPlasmaTransistion.Top = chkAlpha.Top + chkAlpha.Height + 8;
-            lblPlasmaTransistion.Height = txtSpeed.Height;
-            lblPlasmaTransistion.Left = lblSpeed.Left;
-            lblPlasmaTransistion.Width = Program.TextWidth(lblPlasmaTransistion.Text, lblPlasmaTransistion.Font) + 4;
-            txtPlasmaTransition.Top = lblPlasmaTransistion.Top;
-            txtPlasmaTransition.Left = lblPlasmaTransistion.Left + lblPlasmaTransistion.Width + 4;
-            txtPlasmaTransition.Width = Program.TextWidth("1000", txtSpeed.Font) + 8;
-            txtPlasmaTransition.Height = txtSpeed.Height;
             chkWarpSmooth.Top = chkAlpha.Top + chkAlpha.Height + 8;
             chkWarpSmooth.Left = lblSpeed.Left;
             chkWarpSmooth.Width = frmSettings.Width - 16;
@@ -1099,7 +1140,7 @@ namespace RandomArtScreensaver.Forms
             optPlasma.Add(_optPlasma_0);
             optPlasma.Add(_optPlasma_1);
             optPlasma.Add(_optPlasma_2);
-            optPlasma[0].Top = txtPlasmaTransition.Top + txtPlasmaTransition.Height + 8;
+            optPlasma[0].Top = chkAlpha.Top + chkAlpha.Height + 8;
             optPlasma[1].Top = optPlasma[0].Top + optPlasma[0].Height;
             optPlasma[2].Top = optPlasma[1].Top + optPlasma[1].Height;
             for (int i = 0; i <= 2; i++)
@@ -1123,7 +1164,27 @@ namespace RandomArtScreensaver.Forms
             sldPlasmaVariation.Left = chkPlasmaVariationRand.Left + chkPlasmaVariationRand.Width + 4;
             sldPlasmaVariation.Width = frmSettings.Width - (sldPlasmaVariation.Left + 8);
             sldPlasmaVariation.Height = chkPlasmaVariationRand.Height;
-            frmSettings.Height = sldPlasmaVariation.Top + sldPlasmaVariation.Height + 2;
+            lblPlasmaTransistionSpeed.Top = chkPlasmaVariationRand.Top + chkPlasmaVariationRand.Height + 8;
+            lblPlasmaTransistionSpeed.Height = txtSpeed.Height;
+            lblPlasmaTransistionSpeed.Left = lblSpeed.Left;
+            lblPlasmaTransistionSpeed.Width = Program.TextWidth(lblPlasmaTransistionSpeed.Text, lblPlasmaTransistionSpeed.Font) + 4;
+            txtPlasmaTransitionSpeed.Top = lblPlasmaTransistionSpeed.Top - 4;
+            txtPlasmaTransitionSpeed.Left = lblPlasmaTransistionSpeed.Left + lblPlasmaTransistionSpeed.Width + 4;
+            txtPlasmaTransitionSpeed.Width = Program.TextWidth("1000", txtSpeed.Font) + 8;
+            txtPlasmaTransitionSpeed.Height = txtSpeed.Height;
+            lblPlasmaTransistionSpeedMS.Top = lblPlasmaTransistionSpeed.Top;
+            lblPlasmaTransistionSpeedMS.Left = txtPlasmaTransitionSpeed.Left + txtPlasmaTransitionSpeed.Width + 4;
+            lblPlasmaTransistionSpeedMS.Width = Program.TextWidth(lblPlasmaTransistionSpeedMS.Text, lblPlasmaTransistionSpeedMS.Font) + 4;
+            lblPlasmaTransistionSpeedMS.Height = lblPlasmaTransistionSpeed.Height;
+            lblPlasmaTransitionCount.Top = lblPlasmaTransistionSpeed.Top + lblPlasmaTransistionSpeed.Height + 8;
+            lblPlasmaTransitionCount.Left = lblPlasmaTransistionSpeed.Left;
+            lblPlasmaTransitionCount.Width = Program.TextWidth(lblPlasmaTransitionCount.Text, lblPlasmaTransitionCount.Font) + 4;
+            lblPlasmaTransitionCount.Height = lblPlasmaTransistionSpeed.Height;
+            sldPlasmaTransitionCount.Top = lblPlasmaTransitionCount.Top;
+            sldPlasmaTransitionCount.Left = lblPlasmaTransitionCount.Left + lblPlasmaTransitionCount.Width + 4;
+            sldPlasmaTransitionCount.Width = frmSettings.Width - (sldPlasmaTransitionCount.Left + 8);
+            sldPlasmaTransitionCount.Height = lblPlasmaTransitionCount.Height;
+            frmSettings.Height = sldPlasmaTransitionCount.Top + sldPlasmaTransitionCount.Height + 2;
 
             // frmBackground
             frmBackGround.Top = frmSettings.Top;
@@ -1298,7 +1359,8 @@ namespace RandomArtScreensaver.Forms
                 chkPlasmaColorRand.CheckState = System.Windows.Forms.CheckState.Unchecked;
             chkPlasmaColorRand_CheckedChanged(chkPlasmaColorRand, new System.EventArgs());
 
-            txtPlasmaTransition.Text = Settings.saverSettings.plasma.Transition.ToString();
+            txtPlasmaTransitionSpeed.Text = Settings.saverSettings.plasma.TransitionSpeed.ToString();
+            sldPlasmaTransitionCount.Value = Settings.saverSettings.plasma.TransitionCount;
 
             Cursor = System.Windows.Forms.Cursors.Default;
 
@@ -1346,8 +1408,11 @@ namespace RandomArtScreensaver.Forms
             chkPlasmaVariationRand.Visible = false;
             sldPlasmaColor.Visible = false;
             sldPlasmaVariation.Visible = false;
-            txtPlasmaTransition.Visible = false;
-            lblPlasmaTransistion.Visible = false;
+            txtPlasmaTransitionSpeed.Visible = false;
+            lblPlasmaTransistionSpeed.Visible = false;
+            lblPlasmaTransistionSpeedMS.Visible = false;
+            lblPlasmaTransitionCount.Visible = false;
+            sldPlasmaTransitionCount.Visible = false;
 
             ArtType? s = null;
             if (ItmX == Enum.GetName(typeof(ArtTypeEnum), ArtTypeEnum.Dots))
@@ -1425,8 +1490,11 @@ namespace RandomArtScreensaver.Forms
                 chkPlasmaVariationRand.Visible = true;
                 sldPlasmaColor.Visible = true;
                 sldPlasmaVariation.Visible = true;
-                txtPlasmaTransition.Visible = true;
-                lblPlasmaTransistion.Visible = true;
+                txtPlasmaTransitionSpeed.Visible = true;
+                lblPlasmaTransistionSpeed.Visible = true;
+                lblPlasmaTransistionSpeedMS.Visible = true;
+                lblPlasmaTransitionCount.Visible = true;
+                sldPlasmaTransitionCount.Visible = true;
                 s = Settings.saverSettings.artTypes.Find(o => o.Type == ArtTypeEnum.Plasma);
                 txtSpeed.Text = s != null ? s.Speed.ToString() : "5000";
                 chkAlpha.Checked = s != null ? s.Alpha : false;
@@ -1526,9 +1594,14 @@ namespace RandomArtScreensaver.Forms
         private void txtPlasmaTransition_TextChanged(object? sender, EventArgs e)
         {
             if (Settings.saverSettings == null) return;
-            txtPlasmaTransition.Text = Val(txtPlasmaTransition.Text).ToString();
-            if (Val(txtPlasmaTransition.Text) < 0) txtPlasmaTransition.Text = "0";
-            Settings.saverSettings.plasma.Transition = (int)Val(txtPlasmaTransition.Text);
+            txtPlasmaTransitionSpeed.Text = Val(txtPlasmaTransitionSpeed.Text).ToString();
+            if (Val(txtPlasmaTransitionSpeed.Text) < 0) txtPlasmaTransitionSpeed.Text = "0";
+            Settings.saverSettings.plasma.TransitionSpeed = (int)Val(txtPlasmaTransitionSpeed.Text);
+        }
+        private void sldPlasmaTransitionCount_ValueChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            Settings.saverSettings.plasma.TransitionCount = sldPlasmaTransitionCount.Value;
         }
         private void sldAngles_ValueChanged(object? sender, EventArgs e)
         {
