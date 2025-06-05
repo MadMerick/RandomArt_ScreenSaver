@@ -1,5 +1,6 @@
 using System.ComponentModel.Design.Serialization;
 using System.Drawing.Imaging;
+using RandomArtScreensaver.Entities;
 
 namespace RandomArtScreensaver
 {
@@ -153,6 +154,9 @@ namespace RandomArtScreensaver
             base.OnPaint(e);
             if (_screenBuffer == null) return;
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            e.Graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
             if (_capturedBackground != null)
             {
                 e.Graphics.DrawImage(_capturedBackground, ClientRectangle);
@@ -969,10 +973,7 @@ namespace RandomArtScreensaver
             bool mirrorType;
 
             // Create newScreenBuffer if it doesn't exist
-            if (_newScreenBuffer == null || _newScreenBuffer.Width != _screenBuffer.Width || _newScreenBuffer.Height != _screenBuffer.Height)
-            {
-                _newScreenBuffer = new Bitmap(_screenBuffer.Width, _screenBuffer.Height, _screenBuffer.PixelFormat);
-            }
+            _newScreenBuffer = new Bitmap(_screenBuffer.Width, _screenBuffer.Height, _screenBuffer.PixelFormat);
 
             // Lock buffer
             BitmapData? newBmpData = null;
@@ -998,7 +999,7 @@ namespace RandomArtScreensaver
                         mirrorType = false; // 2
 
                     if (Settings.saverSettings.plasma.ColorRand)
-                        ColorAmount = (short)(_random.Next(4) + 1);
+                        ColorAmount = (short)(_random.Next(3) + 1);
                     else
                         ColorAmount = (short)Settings.saverSettings.plasma.Color;
                     ColorAmount = (short)Program.GetPowerofTwo(ColorAmount); //ensure it is even
@@ -1008,8 +1009,8 @@ namespace RandomArtScreensaver
                     else
                         ColorV = (short)Settings.saverSettings.plasma.ColorV;
 
-                    int plasmaWidth = mirrorType ? _newScreenBuffer.Width / 2 : _newScreenBuffer.Width;
-                    int plasmaHeight = mirrorType ? _newScreenBuffer.Height / 2 : _newScreenBuffer.Height;
+                    int plasmaWidth = mirrorType ? _newScreenBuffer.Width / 2 : _newScreenBuffer.Width - 1;
+                    int plasmaHeight = mirrorType ? _newScreenBuffer.Height / 2 : _newScreenBuffer.Height - 1;
 
                     // Instead of DoPlasmaStart, do the initialization here
                     Color[,] templatePixels = new Color[Width + 1, Height + 1]; //temp array
@@ -1038,13 +1039,15 @@ namespace RandomArtScreensaver
                         cWidth = _random.Next(ColorAmount + 1); //randomly choose a color amount
                         cHeight = _random.Next(ColorAmount + 1); //randomly choose a color amount
 
-                        iX = (int)(Decimal.Divide(plasmaWidth, ColorAmount) * cWidth); //break the width into segments and randomly go x number of segments
-                        iY = (int)(Decimal.Divide(plasmaHeight, ColorAmount) * cHeight); //break the height into segments and randomly go y many segments
+                        iX = (int)Math.Floor(Decimal.Divide(plasmaWidth, ColorAmount) * cWidth); //break the width into segments and randomly go x number of segments
+                        iY = (int)Math.Floor(Decimal.Divide(plasmaHeight, ColorAmount) * cHeight); //break the height into segments and randomly go y many segments
+                        if (iX >= plasmaWidth) iX = plasmaWidth;
+                        if (iY >= plasmaHeight) iY = plasmaHeight;
 
                         short inner_i = 0; // Using a separate counter for the inner loop
                         while (inner_i < ColorAmount * ColorAmount) //keep trying new pixels until we have have found empty pixel
                         {
-                            if (templatePixels[iX, iY] != new Color())
+                            if (templatePixels[iX, iY].Name != "0")
                             {
                                 short iD = (short)_random.Next(4); //Randomly choosea direction
 
@@ -1057,8 +1060,10 @@ namespace RandomArtScreensaver
                                             else // (iD == 3) // go left a segment
                                             if (cWidth != 0) cWidth--;
 
-                                iX = (int)(Decimal.Divide(plasmaWidth, ColorAmount) * cWidth); //go x many segments and try again
-                                iY = (int)(Decimal.Divide(plasmaHeight, ColorAmount) * cHeight); //go y many segments and try again
+                                iX = (int)Math.Floor(Decimal.Divide(plasmaWidth, ColorAmount) * cWidth); //go x many segments and try again
+                                iY = (int)Math.Floor(Decimal.Divide(plasmaHeight, ColorAmount) * cHeight); //go y many segments and try again
+                                if (iX >= plasmaWidth) iX = plasmaWidth;
+                                if (iY > -plasmaHeight) iY = plasmaHeight;
                             }
                             else
                             {
@@ -1157,22 +1162,39 @@ namespace RandomArtScreensaver
         }
         unsafe private void PlasmaDetails(byte* pixelPtr, int stride, int bytesPerPixel, int left, int top, int width, int height, Color[,] templatePixels)
         {
+            if (_newScreenBuffer == null) return;
             if ((width - left < 2) && (height - top < 2)) return; //if the box is small, exit
             int midX = (left + width) / 2;
             int midY = (top + height) / 2;
+            if (width >= _newScreenBuffer.Width) width = _newScreenBuffer.Width;
+            if (height >= _newScreenBuffer.Height) height = _newScreenBuffer.Height;
 
             // Get the colors from the templatePixels or the image
-            Color cTopLeft = templatePixels[left, top] != new Color() ? templatePixels[left, top] : GetPixelColor(pixelPtr, stride, bytesPerPixel, left, top);
-            Color cTopRight = templatePixels[width, top] != new Color() ? templatePixels[width, top] : GetPixelColor(pixelPtr, stride, bytesPerPixel, width, top);
-            Color cBottomRight = templatePixels[width, height] != new Color() ? templatePixels[width, height] : GetPixelColor(pixelPtr, stride, bytesPerPixel, width, height);
-            Color cBottomLeft = templatePixels[left, height] != new Color() ? templatePixels[left, height] : GetPixelColor(pixelPtr, stride, bytesPerPixel, left, height);
+            Color cTopLeft = templatePixels[left, top];
+            if (cTopLeft.Name == "0") cTopLeft = GetPixelColor(pixelPtr, stride, bytesPerPixel, left, top);
+            Color cTopRight = templatePixels[width, top];
+            if (cTopRight.Name == "0") cTopRight = GetPixelColor(pixelPtr, stride, bytesPerPixel, width, top);
+            Color cBottomRight = templatePixels[width, height];
+            if (cBottomRight.Name == "0") cBottomRight = GetPixelColor(pixelPtr, stride, bytesPerPixel, width, height);
+            Color cBottomLeft = templatePixels[left, height];
+            if (cBottomLeft.Name == "0") cBottomLeft = GetPixelColor(pixelPtr, stride, bytesPerPixel, left, height);
 
             // Calculate the mid-point colors using the correct neighbors
-            Color cMidTop = AverageColor(cTopLeft, cTopRight);
-            Color cMidBottom = AverageColor(cBottomLeft, cBottomRight);
-            Color cMidLeft = AverageColor(cTopLeft, cBottomLeft);
-            Color cMidRight = AverageColor(cTopRight, cBottomRight);
-            Color cMiddle = AverageColor4(cTopLeft, cTopRight, cBottomLeft, cBottomRight);
+            Color cMidTop = templatePixels[midX, top];
+            //if (cMidTop.Name == "0") cMidTop = GetPixelColor(pixelPtr, stride, bytesPerPixel, midX, top);
+            if (cMidTop.Name == "0") cMidTop = AverageColor(cTopLeft, cTopRight);
+            Color cMidBottom = templatePixels[midX, height];
+            //if (cMidBottom.Name == "0") cMidBottom = GetPixelColor(pixelPtr, stride, bytesPerPixel, midX, height);
+            if (cMidBottom.Name == "0") cMidBottom = AverageColor(cBottomLeft, cBottomRight);
+            Color cMidLeft = templatePixels[left, midY];
+            //if (cMidLeft.Name == "0") cMidLeft = GetPixelColor(pixelPtr, stride, bytesPerPixel, left, midY);
+            if (cMidLeft.Name == "0") cMidLeft = AverageColor(cTopLeft, cBottomLeft);
+            Color cMidRight = templatePixels[width, midY];
+            //if (cMidRight.Name == "0") cMidRight = GetPixelColor(pixelPtr, stride, bytesPerPixel, width, midY);
+            if (cMidRight.Name == "0") cMidRight = AverageColor(cTopRight, cBottomRight);
+            Color cMiddle = templatePixels[midX, midY];
+            //if (cMiddle.Name == "0") cMiddle = GetPixelColor(pixelPtr, stride, bytesPerPixel, midX, midY);
+            if (cMiddle.Name == "0") cMiddle = AverageColor4(cTopLeft, cTopRight, cBottomLeft, cBottomRight);
 
             // Draw the corners
             DrawPixel(pixelPtr, stride, bytesPerPixel, left, top, cTopLeft);

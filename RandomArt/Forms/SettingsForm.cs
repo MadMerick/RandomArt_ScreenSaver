@@ -396,7 +396,7 @@ namespace RandomArtScreensaver.Forms
             // sldPlasmaColor
             // 
             sldPlasmaColor.Location = new Point(33, 190);
-            sldPlasmaColor.Maximum = 8;
+            sldPlasmaColor.Maximum = 4;
             sldPlasmaColor.Minimum = 1;
             sldPlasmaColor.Name = "sldPlasmaColor";
             sldPlasmaColor.Size = new Size(17, 45);

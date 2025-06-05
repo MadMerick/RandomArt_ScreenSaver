@@ -35,7 +35,7 @@ namespace RandomArtScreensaver.Entities.Types
         public bool ColorRand { get; set; } = true;
         public bool ColorVRand { get; set; } = true;
         public int ColorV { get; set; } = 255; //Color Variation 0-255
-        public int Color { get; set; } = 4; //ColorAmount 1-8
+        public int Color { get; set; } = 4; //ColorAmount 1-4
         public int TransitionSpeed { get; set; } = 100; //how smooth between scenes
         public int TransitionCount { get; set; } = 10; //1-100
     }
