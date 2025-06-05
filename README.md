@@ -39,7 +39,7 @@ The screen saver features the following art generation methods, with customizabl
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
     * **Type:** Selects the plasma generation type (full screen or mirrored effect (0=Random, 1=Mirror, 2=Full screen, default: 0).
     * **Random Color Amount:** Enables or disables random color intensity (default: true).
-    * **Color Amount:** Determines the amount of colors intensity used (min: 1 (single color), max: 8 (more colors), default: 4).
+    * **Color Amount:** Determines the amount of colors used. This will multiplied by 2. (min: 1 (2 colors), max: 4 (16 colors), default: 4).
     * **Random Color Variation:** Enables or disables random variation in colors (default: true).
     * **Color Variation:** Sets the amount of color variation (min: 0 (no variation), max: 255 (colors can change drastically), default: 255).
     * **Transition Speed:** Controls the smoothness of transitions between plasma scenes (lower value for smoother transition, default: 100 ms).
