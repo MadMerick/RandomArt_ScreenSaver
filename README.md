@@ -11,31 +11,39 @@ This project is a rewrite and modernization of an old screen saver created in 20
 The screen saver features the following art generation methods, with customizable settings:
 
 * **Dots:** Draws a random pattern of individual colored dots/pixels on the screen.
-    * *(No specific settings exposed)*
+    * **No Transparancy Colors:** Use all opaque color sets (alpha).
+    * **Large Pixel:** Pixels are larger.
 * **Grow:** Creates an effect of elements growing by randomly stacking colored dots/pixels on top of one another.
-    * *(No specific settings exposed in)*
+    * **No Transparancy Colors:** Use all opaque color sets (alpha).
+    * **Large Pixel:** Pixels are larger.
 * **Scribble:** Generates random scribbles in different colors.
+    * **No Transparancy Colors:** Use all opaque color sets (alpha).
     * **Length:** Controls the average length (size) of the scribble (min: 1, max:100, default: 4).
 * **Light:** Simulates a random colored light source with adjustable transparency and light size (center size).
+    * **No Transparancy Colors:** Use all opaque color sets (alpha).
     * **Transparent:** Sets the transparency level of the light effect (min: 0% (opaque), max: 99% (tranparent), default: 0%).
     * **Center:** Adjusts the light size (center size) of the light effect before it fades out (min: 0% (full fading), max: 100% (no fade), default: 0%).
 * **Weeds:** Creates a random pattern resembling growing weeds or organic lines.
-    * *(No specific settings exposed)*
+    * **No Transparancy Colors:** Use all opaque color sets (alpha).
 * **Bubbles:** Generates a display of floating bubbles with adjustable transparency and center concentration.
+    * **No Transparancy Colors:** Use all opaque color sets (alpha).
     * **Transparent:** Sets the transparency level of the bubbles (min: 0% (opaque), max: 99% (transparent), default: 50%).
     * **Center:** Controls the center concentration (or center size) before fading (min: 0% (start fading at center point), 99% (no fade - center is completly transparent), default: 20%).
 * **Warp:** Creates a random color warp tunnel effect.
-    * **Angles:** Determines how round the tunnal is (min: 4 (diamond shaped), max: 100 (circular shaped), default: 50).
-    * **Random Angles:** Enables or disables random variations in the shape of the warp tunnel (default: true).
-    * **Smooth:** Toggles smooth transitions between the warp colors (default: true).
+    * **No Transparancy Colors:** Use all opaque color sets (alpha).
+    * **Smooth Colors:** Toggles smooth transitions between the warp colors (default: true).
     * **Speed:** Controls the speed of the warp animation (how fast one is traveling through the tunnel) (min: 1 (slow), max: 250 (fast), default: 20).
+    * **Random Shape:** Enables or disables random variations in the shape of the warp tunnel (default: true).
+    * **Shape:** Determines how round the tunnal is (min: 4 (diamond shaped), max: 100 (circular shaped), default: 50).
 * **Plasma:** Generates dynamic and colorful plasma effects.
+    * **No Transparancy Colors:** Use all opaque color sets (alpha).
     * **Type:** Selects the plasma generation type (full screen or mirrored effect (0=Random, 1=Mirror, 2=Full screen, default: 0).
-    * **Random Color:** Enables or disables random color intensity (default: true).
-    * **Color:** Determines the amount of colors intensity used (min: 1 (single color), max: 8 (more colors), default: 4).
+    * **Random Color Amount:** Enables or disables random color intensity (default: true).
+    * **Color Amount:** Determines the amount of colors intensity used (min: 1 (single color), max: 8 (more colors), default: 4).
     * **Random Color Variation:** Enables or disables random variation in colors (default: true).
     * **Color Variation:** Sets the amount of color variation (min: 0 (no variation), max: 255 (colors can change drastically), default: 255).
-    * **Transition:** Controls the smoothness of transitions between plasma scenes (higher value for smoother transition, default: 100).
+    * **Transition Speed:** Controls the smoothness of transitions between plasma scenes (lower value for smoother transition, default: 100 ms).
+    * **Transition Count:** Controls the number of transition frames it will cycle through between scenes (higher value for smoother transition, default: 10).
 
 Each art style also has a:
 
