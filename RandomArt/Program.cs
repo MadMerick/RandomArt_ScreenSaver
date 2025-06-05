@@ -10,7 +10,7 @@ namespace RandomArtScreensaver
     {
         public static bool Logging = false;
         public static bool IsTesting = false;
-        public static decimal Version = 2.2m;
+        public static decimal Version = 2.3m;
 
         #region DLL Imports
         [DllImport("user32.dll", SetLastError = true)]
