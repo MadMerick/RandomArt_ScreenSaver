@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 namespace RandomArtScreensaver.Entities
 {
     public class SaverSettings

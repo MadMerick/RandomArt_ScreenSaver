@@ -9,7 +9,7 @@ namespace RandomArtScreensaver
     public static class Program
     {
         public static bool Logging = false;
-        public static bool IsTesting = false;
+        public static bool IsTesting = true;
         public static decimal Version = 2.3m;
 
         #region DLL Imports
@@ -89,8 +89,8 @@ namespace RandomArtScreensaver
                 else // No arguments
                 {
                     // Run in full-screen mode by default or show settings?
-                    ShowTitleScreenAndRun();
-                    //ShowSettingsForm();
+                    //ShowTitleScreenAndRun();
+                    ShowSettingsForm();
                 }
             }
             catch (Exception ex)

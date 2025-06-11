@@ -1280,7 +1280,9 @@ namespace RandomArtScreensaver.Forms
             DoDemo = false;
             Application.DoEvents();
             if (Settings.saverSettings == null) return;
-            foreach (Entities.ArtType a in Settings.saverSettings.artTypes) {
+            lstTypes.Items.Clear();
+            foreach (Entities.ArtType a in Settings.saverSettings.artTypes)
+            {
                 string? sName = Enum.GetName(typeof(ArtTypeEnum), a.Type);
                 if (string.IsNullOrEmpty(sName)) sName = a.Type.ToString();
                 System.Windows.Forms.ListViewItem ItmX = lstTypes.Items.Add(sName, sName);

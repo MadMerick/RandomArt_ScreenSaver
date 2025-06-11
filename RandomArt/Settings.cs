@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using System.Runtime.InteropServices;
+using Newtonsoft.Json;
 
 namespace RandomArtScreensaver
 {
@@ -47,7 +48,7 @@ namespace RandomArtScreensaver
                 if (File.Exists(sFile))
                 {
                     string jsonString = File.ReadAllText(sFile);
-                    Entities.SaverSettings? settings = Newtonsoft.Json.JsonConvert.DeserializeObject<Entities.SaverSettings>(jsonString);
+                    Entities.SaverSettings? settings = Newtonsoft.Json.JsonConvert.DeserializeObject<Entities.SaverSettings>(jsonString, new JsonSerializerSettings { ObjectCreationHandling = ObjectCreationHandling.Replace });
                     if (settings != null) saverSettings = settings;
                 }
                 else
