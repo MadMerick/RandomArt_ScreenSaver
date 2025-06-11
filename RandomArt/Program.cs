@@ -1,8 +1,6 @@
 ﻿using System.Runtime.InteropServices;
-
-/*todo: 
-
-*/
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace RandomArtScreensaver
 {
@@ -36,6 +34,9 @@ namespace RandomArtScreensaver
         // Required constants and external functions
         private const int GWL_STYLE = -16;
         private const uint WS_CHILD = 0x40000000;
+        private const string GitHubOwner = "MadMerick";
+        private const string GitHubRepo = "RandomArt_ScreenSaver";
+
         #endregion
         [STAThread]
         static void Main(string[] args)
@@ -89,8 +90,8 @@ namespace RandomArtScreensaver
                 else // No arguments
                 {
                     // Run in full-screen mode by default or show settings?
-                    //ShowTitleScreenAndRun();
-                    ShowSettingsForm();
+                    ShowTitleScreenAndRun();
+                    //ShowSettingsForm();
                 }
             }
             catch (Exception ex)
@@ -175,6 +176,85 @@ namespace RandomArtScreensaver
                 Settings.screensaverForms.Add(scr);
             }
             Application.Run();
+        }
+        public static async Task<Version> GetLatestGitHubVersion()
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("User-Agent", GitHubRepo);
+
+                    string url = $"https://api.github.com/repos/{GitHubOwner}/{GitHubRepo}/releases/latest";
+                    HttpResponseMessage response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string json = await response.Content.ReadAsStringAsync();
+                        JObject release = JObject.Parse(json);
+                        string? tagName = release["tag_name"]?.ToString();
+
+                        if (!string.IsNullOrEmpty(tagName))
+                        {
+                            // GitHub release tags often start with 'v' (e.g., v1.0.0).
+                            // You might need to remove this prefix for accurate version parsing.
+                            if (tagName.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+                            {
+                                tagName = tagName.Substring(1);
+                            }
+                            return new Version(tagName);
+                        }
+                    }
+                }
+            }
+            catch (HttpRequestException httpEx)
+            {
+                // Log the exception, e.g., using a logging framework or Console.WriteLine
+                Console.WriteLine($"HTTP request error: {httpEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Log other exceptions
+                Console.WriteLine($"An error occurred during update check: {ex.Message}");
+            }
+            return null; // Return null if unable to get the latest version
+        }
+        public static void OpenGitHubReleasePage()
+        {
+            string releaseUrl = $"https://github.com/{GitHubOwner}/{GitHubRepo}/releases";
+            try
+            {
+                Process.Start(new ProcessStartInfo(releaseUrl) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Could not open the download page: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        public static async Task CheckForUpdates()
+        {
+            Version currentVersion = new Version(Convert.ToString(Program.Version));
+            Version latestGitHubVersion = await GetLatestGitHubVersion();
+
+            if (latestGitHubVersion != null && latestGitHubVersion > currentVersion)
+            {
+                DialogResult result = MessageBox.Show(
+                    $"A newer version ({latestGitHubVersion}) of the application is available!\n\n" +
+                    "Do you want to go to the download page?",
+                    "New Version Available",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Information
+                );
+
+                if (result == DialogResult.Yes)
+                {
+                    OpenGitHubReleasePage();
+                }
+            }
+            else if (latestGitHubVersion == null)
+            {
+                MessageBox.Show("Could not check for updates. Please check your internet connection or try again later.", "Update Check Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
         public static int TextWidth(string s, Font f)
         {

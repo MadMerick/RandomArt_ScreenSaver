@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Threading.Tasks;
 using RandomArtScreensaver.Entities;
 
 namespace RandomArtScreensaver.Forms
@@ -1053,7 +1054,7 @@ namespace RandomArtScreensaver.Forms
             lstTypes.Height = (Program.TextHeight("Iy", lstTypes.Font) * 11) + 32;
             frmArtType.Width = lstTypes.Left + lstTypes.Width + 4;
             frmArtType.Height = lstTypes.Top + lstTypes.Height + 4;
-            
+
             //cmd widths
             cmdSave.Width = Program.TextWidth("Save", cmdSave.Font) + 40;
             cmdCancel.Width = Program.TextWidth("Cancel", cmdCancel.Font) + 40;
@@ -1084,7 +1085,7 @@ namespace RandomArtScreensaver.Forms
             chkLarge.Width = Program.TextWidth(chkLarge.Text, chkLarge.Font) + 22;
             lblScribbleLen.Top = chkAlpha.Top + chkAlpha.Height + 8;
             lblScribbleLen.Left = lblSpeed.Left;
-            lblScribbleLen.Height= lblSpeed.Height;
+            lblScribbleLen.Height = lblSpeed.Height;
             lblScribbleLen.Width = Program.TextWidth(lblScribbleLen.Text, lblScribbleLen.Font) + 4;
             sldScribbleLen.Top = lblScribbleLen.Top;
             sldScribbleLen.Left = lblScribbleLen.Left + lblScribbleLen.Width + 4;
@@ -1188,7 +1189,7 @@ namespace RandomArtScreensaver.Forms
 
             // frmBackground
             frmBackGround.Top = frmSettings.Top;
-            frmBackGround.Left = frmSettings. Left + frmSettings.Width + 8;
+            frmBackGround.Left = frmSettings.Left + frmSettings.Width + 8;
             chkUseBack.Left = lblSpeed.Left;
             chkUseBack.Top = lblSpeed.Top;
             chkUseBack.Width = Program.TextWidth(chkUseBack.Text, chkUseBack.Font) + 32;
@@ -1224,7 +1225,7 @@ namespace RandomArtScreensaver.Forms
             sldBlue.Top = lblBlue.Top;
             sldBlue.Left = sldRed.Left;
             sldBlue.Width = sldRed.Width;
-            
+
             frmBackGround.Height = sldBlue.Top + sldBlue.Height + 16;
             this.Width = frmBackGround.Left + frmBackGround.Width + 24;
 
@@ -1275,6 +1276,9 @@ namespace RandomArtScreensaver.Forms
             // set up settings
             Settings.LoadSettings();
             LoadSettings();
+
+            //check version
+            Program.CheckForUpdates();
         }
         private void LoadSettings() {
             DoDemo = false;
