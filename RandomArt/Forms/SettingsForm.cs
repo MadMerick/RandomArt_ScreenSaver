@@ -1278,7 +1278,7 @@ namespace RandomArtScreensaver.Forms
             LoadSettings();
 
             //check version
-            Program.CheckForUpdates();
+            _ = Program.CheckForUpdates();
         }
         private void LoadSettings() {
             DoDemo = false;

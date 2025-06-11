@@ -7,8 +7,8 @@ namespace RandomArtScreensaver
     public static class Program
     {
         public static bool Logging = false;
-        public static bool IsTesting = true;
-        public static decimal Version = 2.3m;
+        public static bool IsTesting = false;
+        public static decimal Version = 2.4m;
 
         #region DLL Imports
         [DllImport("user32.dll", SetLastError = true)]
@@ -177,7 +177,7 @@ namespace RandomArtScreensaver
             }
             Application.Run();
         }
-        public static async Task<Version> GetLatestGitHubVersion()
+        public static async Task<Version?> GetLatestGitHubVersion()
         {
             try
             {
@@ -234,7 +234,7 @@ namespace RandomArtScreensaver
         public static async Task CheckForUpdates()
         {
             Version currentVersion = new Version(Convert.ToString(Program.Version));
-            Version latestGitHubVersion = await GetLatestGitHubVersion();
+            Version? latestGitHubVersion = await GetLatestGitHubVersion();
 
             if (latestGitHubVersion != null && latestGitHubVersion > currentVersion)
             {
