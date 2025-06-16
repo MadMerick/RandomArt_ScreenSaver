@@ -22,17 +22,17 @@ The screen saver features the following art generation methods, with customizabl
 * **Light:** Simulates a random colored light source with adjustable transparency and light size (center size).
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
     * **Transparent:** Sets the transparency level of the light effect (min: 0% (opaque), max: 99% (tranparent), default: 0%).
-    * **Center:** Adjusts the light size (center size) of the light effect before it fades out (min: 0% (full fading), max: 100% (no fade), default: 0%).
+    * **Center:** Adjusts the light size (center size) of the light effect before it fades out (min: 0% (full fading), max: 100% (no fade), default: 10%).
 * **Weeds:** Creates a random pattern resembling growing weeds or organic lines.
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
 * **Bubbles:** Generates a display of floating bubbles with adjustable transparency and center concentration.
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
     * **Transparent:** Sets the transparency level of the bubbles (min: 0% (opaque), max: 99% (transparent), default: 50%).
-    * **Center:** Controls the center concentration (or center size) before fading (min: 0% (start fading at center point), 99% (no fade - center is completly transparent), default: 20%).
+    * **Center:** Controls the center concentration (or center size) before fading (min: 0% (start fading at center point), 99% (no fade - center is completly transparent), default: 30%).
 * **Warp:** Creates a random color warp tunnel effect.
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
     * **Smooth Colors:** Toggles smooth transitions between the warp colors (default: true).
-    * **Speed:** Controls the speed of the warp animation (how fast one is traveling through the tunnel) (min: 1 (slow), max: 250 (fast), default: 20).
+    * **Speed:** Controls the speed of the warp animation (how fast one is traveling through the tunnel) (min: 1 (slow), max: 250 (fast), default: 10).
     * **Random Shape:** Enables or disables random variations in the shape of the warp tunnel (default: true).
     * **Shape:** Determines how round the tunnal is (min: 4 (diamond shaped), max: 100 (circular shaped), default: 50).
 * **Plasma:** Generates dynamic and colorful plasma effects.
@@ -42,8 +42,8 @@ The screen saver features the following art generation methods, with customizabl
     * **Color Amount:** Determines the amount of colors used. This will multiplied by 2. (min: 1 (2 colors), max: 4 (16 colors), default: 4).
     * **Random Color Variation:** Enables or disables random variation in colors (default: true).
     * **Color Variation:** Sets the amount of color variation (min: 0 (no variation), max: 255 (colors can change drastically), default: 255).
-    * **Transition Speed:** Controls the smoothness of transitions between plasma scenes (lower value for smoother transition, default: 100 ms).
-    * **Transition Count:** Controls the number of transition frames it will cycle through between scenes (higher value for smoother transition, default: 10).
+    * **Transition Speed:** Controls the smoothness of transitions between plasma scenes (lower value for smoother transition, default: 75 ms).
+    * **Transition Count:** Controls the number of transition frames it will cycle through between scenes (higher value for smoother transition, default: 50).
 
 Each art style also has a:
 
