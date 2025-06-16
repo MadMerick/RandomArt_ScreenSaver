@@ -22,7 +22,7 @@ namespace RandomArtScreensaver.Entities
             new ArtType(ArtTypeEnum.Light, 13, 1000, false),//13, 1000 - G
             new ArtType(ArtTypeEnum.Weeds, 12, 500, false),//12, 500 - G
             new ArtType(ArtTypeEnum.Bubbles, 13, 1000, false),//13, 1000 - G
-            new ArtType(ArtTypeEnum.Warp, 13, 100 , false),//13, 500 - 
+            new ArtType(ArtTypeEnum.Warp, 13, 10 , true),//13, 500 - 
             new ArtType(ArtTypeEnum.Plasma, 13, 5000, false)//13, 5000 - 
         };
     }
