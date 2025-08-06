@@ -22,6 +22,10 @@ namespace RandomArtScreensaver.Forms
         private TrackBar sldPlasmaVariation = new TrackBar();
         private TrackBar sldPlasmaTransitionCount = new TrackBar();
         private TrackBar sldPlasmaColor = new TrackBar();
+        private TrackBar sldDotSplash = new TrackBar();
+        private TrackBar sldGrowSplash = new TrackBar();
+        private Label lblDotSplash = new Label();
+        private Label lblGrowSplash = new Label();
         private RadioButton _optPlasma_2 = new RadioButton();
         private RadioButton _optPlasma_1 = new RadioButton();
         private RadioButton _optPlasma_0 = new RadioButton();
@@ -102,6 +106,10 @@ namespace RandomArtScreensaver.Forms
             sldLightTrans = new TrackBar();
             sldBubbleCenter = new TrackBar();
             sldBubbleTrans = new TrackBar();
+            sldDotSplash = new TrackBar();
+            lblDotSplash = new Label();
+            sldGrowSplash = new TrackBar();
+            lblGrowSplash = new Label();
             _optPlasma_2 = new RadioButton();
             _optPlasma_1 = new RadioButton();
             _optPlasma_0 = new RadioButton();
@@ -304,6 +312,10 @@ namespace RandomArtScreensaver.Forms
             frmSettings.Controls.Add(sldLightCenter);
             frmSettings.Controls.Add(lblLightTrans);
             frmSettings.Controls.Add(sldLightTrans);
+            frmSettings.Controls.Add(sldGrowSplash);
+            frmSettings.Controls.Add(lblGrowSplash);
+            frmSettings.Controls.Add(sldDotSplash);
+            frmSettings.Controls.Add(lblDotSplash);
             frmSettings.Controls.Add(lblBubbleCenter);
             frmSettings.Controls.Add(sldBubbleCenter);
             frmSettings.Controls.Add(lblBubbleTrans);
@@ -369,6 +381,30 @@ namespace RandomArtScreensaver.Forms
             ToolTip1.SetToolTip(sldLightTrans, "The transparency of the light");
             sldLightTrans.Cursor = System.Windows.Forms.Cursors.Hand;
             sldLightTrans.ValueChanged += sldLightTrans_ValueChanged;
+            // 
+            // sldDotSplash
+            // 
+            sldDotSplash.Location = new Point(10, 192);
+            sldDotSplash.Maximum = 100;
+            sldDotSplash.Minimum = 1;
+            sldDotSplash.Name = "sldDotSplash";
+            sldDotSplash.Size = new Size(17, 45);
+            sldDotSplash.TabIndex = 11;
+            ToolTip1.SetToolTip(sldDotSplash, "The number of surounding pixels impacted by the color change");
+            sldDotSplash.Cursor = System.Windows.Forms.Cursors.Hand;
+            sldDotSplash.ValueChanged += sldDotSplash_ValueChanged;
+            // 
+            // sldGrowSplash
+            // 
+            sldGrowSplash.Location = new Point(10, 192);
+            sldGrowSplash.Maximum = 100;
+            sldGrowSplash.Minimum = 1;
+            sldGrowSplash.Name = "sldGrowSplash";
+            sldGrowSplash.Size = new Size(17, 45);
+            sldGrowSplash.TabIndex = 11;
+            ToolTip1.SetToolTip(sldGrowSplash, "The number of surounding pixels impacted by the color change");
+            sldGrowSplash.Cursor = System.Windows.Forms.Cursors.Hand;
+            sldGrowSplash.ValueChanged += sldGrowSplash_ValueChanged;
             // 
             // sldBubbleCenter
             // 
@@ -617,6 +653,30 @@ namespace RandomArtScreensaver.Forms
             lblWarpSpeed.TabIndex = 33;
             lblWarpSpeed.Text = "Speed:";
             lblWarpSpeed.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // lblDotSplash
+            // 
+            lblDotSplash.BackColor = Color.Transparent;
+            lblDotSplash.ForeColor = SystemColors.ControlText;
+            lblDotSplash.Location = new Point(8, 24);
+            lblDotSplash.Name = "lblDotSplash";
+            lblDotSplash.RightToLeft = RightToLeft.No;
+            lblDotSplash.Size = new Size(33, 17);
+            lblDotSplash.TabIndex = 33;
+            lblDotSplash.Text = "Splash:";
+            lblDotSplash.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // lblGrowSplash
+            // 
+            lblGrowSplash.BackColor = Color.Transparent;
+            lblGrowSplash.ForeColor = SystemColors.ControlText;
+            lblGrowSplash.Location = new Point(8, 24);
+            lblGrowSplash.Name = "lblGrowSplash";
+            lblGrowSplash.RightToLeft = RightToLeft.No;
+            lblGrowSplash.Size = new Size(33, 17);
+            lblGrowSplash.TabIndex = 33;
+            lblGrowSplash.Text = "Splash:";
+            lblGrowSplash.TextAlign = ContentAlignment.TopCenter;
             // 
             // lblLightCenter
             // 
@@ -1083,6 +1143,20 @@ namespace RandomArtScreensaver.Forms
             chkLarge.Top = chkAlpha.Top + chkAlpha.Height + 8;
             chkLarge.Height = chkAlpha.Height;
             chkLarge.Width = Program.TextWidth(chkLarge.Text, chkLarge.Font) + 22;
+            lblDotSplash.Left = lblSpeed.Left;
+            lblDotSplash.Top = chkLarge.Top + chkLarge.Height + 8;
+            lblDotSplash.Height = lblSpeed.Height;
+            lblDotSplash.Width = Program.TextWidth(lblDotSplash.Text, lblDotSplash.Font) + 4;
+            lblGrowSplash.Top = lblDotSplash.Top;
+            lblGrowSplash.Left = lblDotSplash.Left;
+            lblGrowSplash.Width = lblDotSplash.Width;
+            lblGrowSplash.Height = lblDotSplash.Height;
+            sldDotSplash.Left = lblDotSplash.Left + lblDotSplash.Width + 4;
+            sldDotSplash.Width = frmSettings.Width - (sldDotSplash.Left + 8);
+            sldDotSplash.Top = lblDotSplash.Top;
+            sldGrowSplash.Left = sldDotSplash.Left;
+            sldGrowSplash.Top = sldDotSplash.Top;
+            sldGrowSplash.Width = sldDotSplash.Width;
             lblScribbleLen.Top = chkAlpha.Top + chkAlpha.Height + 8;
             lblScribbleLen.Left = lblSpeed.Left;
             lblScribbleLen.Height = lblSpeed.Height;
@@ -1338,6 +1412,9 @@ namespace RandomArtScreensaver.Forms
             sldBubbleCenter.Value = (int)(Settings.saverSettings.bubble.Center * 100);
             sldBubbleTrans.Value = (int)(Settings.saverSettings.bubble.Transparent * 100);
 
+            sldGrowSplash.Value = Settings.saverSettings.grow.SplashSize;
+            sldDotSplash.Value = Settings.saverSettings.dot.SplashSize;
+
             if (System.Convert.ToBoolean(Settings.saverSettings.UseBack) == false)
                 chkUseBack.CheckState = System.Windows.Forms.CheckState.Unchecked;
             else
@@ -1399,6 +1476,12 @@ namespace RandomArtScreensaver.Forms
             lblScribbleLen.Visible = false;
             sldScribbleLen.Visible = false;
 
+            lblDotSplash.Visible = false;
+            sldDotSplash.Visible = false;
+
+            lblGrowSplash.Visible = false;
+            sldGrowSplash.Visible = false;
+
             chkLarge.Visible = false;
 
             // Assuming optPlasma is a Control array or a List<Control>
@@ -1428,6 +1511,8 @@ namespace RandomArtScreensaver.Forms
                 chkAlpha.Checked = s != null ? s.Alpha : true;
                 chkLarge.Visible = true;
                 chkLarge.Checked = Settings.saverSettings.dot.Large;
+                lblDotSplash.Visible = true;
+                sldDotSplash.Visible = true;
             }
             else if (ItmX == Enum.GetName(typeof(ArtTypeEnum), ArtTypeEnum.Grow))
             {
@@ -1436,6 +1521,8 @@ namespace RandomArtScreensaver.Forms
                 chkAlpha.Checked = s != null ? s.Alpha : true;
                 chkLarge.Visible = true;
                 chkLarge.Checked = Settings.saverSettings.grow.Large;
+                lblGrowSplash.Visible = true;
+                sldGrowSplash.Visible = true;
             }
             else if (ItmX == Enum.GetName(typeof(ArtTypeEnum), ArtTypeEnum.Weeds))
             {
@@ -1575,6 +1662,16 @@ namespace RandomArtScreensaver.Forms
         {
             if (Settings.saverSettings == null) return;
             Settings.saverSettings.warp.Speed = sldWarpSpeed.Value;
+        }
+        private void sldGrowSplash_ValueChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            Settings.saverSettings.grow.SplashSize = sldGrowSplash.Value;
+        }
+        private void sldDotSplash_ValueChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            Settings.saverSettings.dot.SplashSize = sldDotSplash.Value;
         }
         private void sldScribbleLen_ValueChanged(object? sender, EventArgs e)
         {
