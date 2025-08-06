@@ -601,7 +601,7 @@ namespace RandomArtScreensaver
                                         DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
                                     else
                                         DrawPixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
-                                    DrawSplash(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b), Settings.saverSettings.grow.SplashSize);
+                                    DrawSplash2(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b), Settings.saverSettings.grow.SplashSize);
                                     break;
                                 }
                             }
@@ -657,7 +657,7 @@ namespace RandomArtScreensaver
                         DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
                     else
                         DrawPixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
-                    DrawSplash(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b), Settings.saverSettings.dot.SplashSize);
+                    DrawSplash2(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b), Settings.saverSettings.dot.SplashSize);
                 }
             }
             finally
