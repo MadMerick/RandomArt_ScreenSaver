@@ -385,7 +385,7 @@ namespace RandomArtScreensaver.Forms
             // sldDotSplash
             // 
             sldDotSplash.Location = new Point(10, 192);
-            sldDotSplash.Maximum = 100;
+            sldDotSplash.Maximum = 500;
             sldDotSplash.Minimum = 1;
             sldDotSplash.Name = "sldDotSplash";
             sldDotSplash.Size = new Size(17, 45);
@@ -663,7 +663,7 @@ namespace RandomArtScreensaver.Forms
             lblDotSplash.RightToLeft = RightToLeft.No;
             lblDotSplash.Size = new Size(33, 17);
             lblDotSplash.TabIndex = 33;
-            lblDotSplash.Text = "Splash:";
+            lblDotSplash.Text = "Smudge:";
             lblDotSplash.TextAlign = ContentAlignment.TopCenter;
             // 
             // lblGrowSplash
@@ -675,7 +675,7 @@ namespace RandomArtScreensaver.Forms
             lblGrowSplash.RightToLeft = RightToLeft.No;
             lblGrowSplash.Size = new Size(33, 17);
             lblGrowSplash.TabIndex = 33;
-            lblGrowSplash.Text = "Splash:";
+            lblGrowSplash.Text = "Smudge:";
             lblGrowSplash.TextAlign = ContentAlignment.TopCenter;
             // 
             // lblLightCenter

@@ -1,6 +1,8 @@
 using System.ComponentModel.Design.Serialization;
+using System.Configuration;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using RandomArtScreensaver.Entities;
 
 namespace RandomArtScreensaver
@@ -340,38 +342,65 @@ namespace RandomArtScreensaver
                 }
             }
         }
-        unsafe private void DrawSplash(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color, int SplashSize)
+        unsafe private void DrawSplashDot(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color)
         {
-            for (int newX = x - SplashSize; newX < x + SplashSize; newX++)
+            if (Settings.saverSettings == null) return;
+            int l = _random.Next(Settings.saverSettings.dot.SplashSize * 100) + 1;
+            int h = 1;
+            int tries = 0;
+            if (Settings.saverSettings.dot.Large) h = 2;
+            for (int i = 0; i <= l; i++)
             {
-                for (int newY = y - SplashSize; newY < y + SplashSize; newY++)
+                int d = _random.Next(4);
+
+                if (d == 0)
                 {
-                    Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, newX, newY);
-                    if (c.A != 0)
+                    if (x < Width) x += h;
+                    else tries++;
+                }
+                else if (d == 1)
+                {
+                    if (y < Height) y += h;
+                    else tries++;
+                }
+                else if (d == 2)
+                {
+                    if (x > 0) x -= h;
+                    else tries++;
+                }
+                else // d == 3
+                {
+                    if (y > 0) y -= h;
+                    else tries++;
+                }
+
+                if (tries > 10) break;
+
+                // Directly set the pixel color in the bitmap data
+                Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, x, y);
+                if (c.A != 0)
+                {
+                    d = _random.Next(4);
+                    switch (d)
                     {
-                        float perFadeX = x - newX;
-                        if (perFadeX < 0) perFadeX = newX - x;
-                        perFadeX = 1 - (perFadeX / SplashSize);
-                        float perFadeY = y - newY;
-                        if (perFadeY < 0) perFadeY = newY - y;
-                        perFadeY = 1 - (perFadeY / SplashSize);
-                        float perFade = (perFadeX + perFadeY) / 2;
-                        //int a = Convert.ToInt32(((color.A * perFade) + c.A) / 2);
-                        int r = Convert.ToInt32(((color.R * perFade) + c.R) / 2);
-                        int g = Convert.ToInt32(((color.G * perFade) + c.G) / 2);
-                        int b = Convert.ToInt32(((color.B * perFade) + c.B) / 2);
-                        //if (a > 255) a = 255;
-                        //if (a < 0) a = 0;
-                        int a = 255;
-                        if (r > 255) r = 255;
-                        if (r < 0) r = 0;
-                        if (g > 255) g = 255;
-                        if (g < 0) g = 0;
-                        if (b > 255) b = 255;
-                        if (b < 0) b = 0;
-                        c = Color.FromArgb(a, r, g, b);
-                        DrawPixel(pixelPtr, stride, bytesPerPixel, newX, newY, c);
+                        case 0:
+                            x = x - h;
+                            break;
+                        case 1:
+                            y = y - h;
+                            break;
+                        case 2:
+                            if(!Settings.saverSettings.dot.Large) y = y + h;
+                            break;
+                        case 3:
+                            if(!Settings.saverSettings.dot.Large) x = x + h;
+                            break;
                     }
+                    Color n = BlendColors(c, color, i / l);
+                    if (Settings.saverSettings.dot.Large)
+                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, n);
+                    else
+                        DrawPixel(pixelPtr, stride, bytesPerPixel, x, y, n);
                 }
             }
         }
@@ -462,6 +491,78 @@ namespace RandomArtScreensaver
             {
                 //do nothing
             }
+        }
+        unsafe private void DrawSplashGrow(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color)
+        {
+            if (Settings.saverSettings == null) return;
+            int l = _random.Next(Settings.saverSettings.grow.SplashSize * 100) + 1;
+            int h = 1;
+            if (Settings.saverSettings.grow.Large) h = 2;
+            for (int i = 0; i <= l; i++)
+            {
+                int d = _random.Next(4);
+
+                if (d == 0)
+                {
+                    if (x < Width) x += h;
+                    else break;
+                }
+                else if (d == 1)
+                {
+                    if (y < Height) y += h;
+                    else break;
+                }
+                else if (d == 2)
+                {
+                    if (x > 0) x -= h;
+                    else break;
+                }
+                else // d == 3
+                {
+                    if (y > 0) y -= h;
+                    else break;
+                }
+
+                // Directly set the pixel color in the bitmap data
+                Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, x, y);
+                if (c.A != 0)
+                {
+                    Color n = BlendColors(c, color, i / l);
+                    if (Settings.saverSettings.grow.Large)
+                    {
+                        d = _random.Next(2) - 1;
+                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x + d, y, n);
+                    }
+                    else
+                    {
+                        d = _random.Next(3) - 1;
+                        DrawPixel(pixelPtr, stride, bytesPerPixel, x + d, y + 1, n); 
+                    } 
+                }
+            }
+        }
+        public static Color BlendColors(Color baseColor, Color overlayColor, float blendFactor)
+        {
+            // Ensure the blendFactor is between 0.0 and 1.0
+            if (blendFactor < 0.0f) blendFactor = 0.0f;
+            if (blendFactor > 1.0f) blendFactor = 1.0f;
+
+            // Calculate the inverse factor for the base color
+            float inverseFactor = 1.0f - blendFactor;
+
+            // Linearly interpolate each color component
+            int r = (int)(baseColor.R * inverseFactor + overlayColor.R * blendFactor);
+            int g = (int)(baseColor.G * inverseFactor + overlayColor.G * blendFactor);
+            int b = (int)(baseColor.B * inverseFactor + overlayColor.B * blendFactor);
+            int a = (int)(baseColor.A * inverseFactor + overlayColor.A * blendFactor);
+
+            // Clamp the values to the 0-255 range
+            r = Math.Max(0, Math.Min(255, r));
+            g = Math.Max(0, Math.Min(255, g));
+            b = Math.Max(0, Math.Min(255, b));
+            a = Math.Max(0, Math.Min(255, a));
+
+            return Color.FromArgb(a, r, g, b);
         }
         unsafe private Color GetPixelColor(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y)
         {
@@ -568,6 +669,8 @@ namespace RandomArtScreensaver
             if (_alpha) a = 255;
             int x = _random.Next(Width + 1);
             int h = Height - 1;
+            int p = 1;
+            if (Settings.saverSettings.grow.Large) p = 2;
 
             BitmapData? bmpData = null;
             try
@@ -581,7 +684,7 @@ namespace RandomArtScreensaver
                 {
                     byte* pixelPtr = (byte*)ptr;
 
-                    for (int y = 0; y <= Height; y += 2)
+                    for (int y = 0; y <= Height; y += p)
                     {
                         int checkY = h - y;
                         if (checkY < 0) break;
@@ -601,7 +704,7 @@ namespace RandomArtScreensaver
                                         DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
                                     else
                                         DrawPixel(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
-                                    DrawSplash2(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b), Settings.saverSettings.grow.SplashSize);
+                                    DrawSplashGrow(pixelPtr, stride, bytesPerPixel, x, checkY, Color.FromArgb(a, r, g, b));
                                     break;
                                 }
                             }
@@ -657,7 +760,7 @@ namespace RandomArtScreensaver
                         DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
                     else
                         DrawPixel(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
-                    DrawSplash2(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b), Settings.saverSettings.dot.SplashSize);
+                    DrawSplashDot(pixelPtr, stride, bytesPerPixel, x, y, Color.FromArgb(a, r, g, b));
                 }
             }
             finally
