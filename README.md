@@ -12,15 +12,15 @@ The screen saver features the following art generation methods, with customizabl
 
 * **Dots:** Draws a random pattern of individual colored dots/pixels on the screen.
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
-    * **Large Pixel:** Pixels are larger.
-    * **Smudge:** How many pixels are impacted by the color change.
+    * **Large Pixel:** Pixels are larger. (default: true)
+    * **Smudge:** How many pixels are impacted by the color change. (min: 1, max: 100, default: 50)
 * **Grow:** Creates an effect of elements growing by randomly stacking colored dots/pixels on top of one another.
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
-    * **Large Pixel:** Pixels are larger.
-    * **Smudge:** How many pixels are impacted by the color change.
+    * **Large Pixel:** Pixels are larger. (default: true)
+    * **Smudge:** How many pixels are impacted by the color change. (min: 1, max: 100, default: 50)
 * **Scribble:** Generates random scribbles in different colors.
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
-    * **Length:** Controls the average length (size) of the scribble (min: 1, max:100, default: 4).
+    * **Length:** Controls the average length (size) of the scribble (min: 1, max: 100, default: 4).
 * **Light:** Simulates a random colored light source with adjustable transparency and light size (center size).
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
     * **Transparent:** Sets the transparency level of the light effect (min: 0% (opaque), max: 99% (tranparent), default: 0%).
