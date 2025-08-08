@@ -385,7 +385,7 @@ namespace RandomArtScreensaver.Forms
             // sldDotSplash
             // 
             sldDotSplash.Location = new Point(10, 192);
-            sldDotSplash.Maximum = 500;
+            sldDotSplash.Maximum = 100;
             sldDotSplash.Minimum = 1;
             sldDotSplash.Name = "sldDotSplash";
             sldDotSplash.Size = new Size(17, 45);
@@ -1928,6 +1928,14 @@ namespace RandomArtScreensaver.Forms
                         {
                             lblBubbleTrans.Enabled = !chkAlpha.Checked;
                             sldBubbleTrans.Enabled = !chkAlpha.Checked;
+                        }
+                        if (Settings.screensaverForms != null)
+                        {
+                            foreach (ScreenSaverForm s in Settings.screensaverForms)
+                            {
+                                s.Alpha = chkAlpha.Checked;
+                                Application.DoEvents();
+                            }
                         }
                         break;
                     }

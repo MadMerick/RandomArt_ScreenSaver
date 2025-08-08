@@ -19,6 +19,8 @@ namespace RandomArtScreensaver.Forms
         #endregion
         private Point _mouseLocation;
         private bool _mouseMoved = false;
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool Alpha { get; set; } = true;
         public Bitmap? _capturedBackground;
         public static int? IsDemo = null; //0:Normal, 1:Demo, 2:Preview, 3:Demo preview
         public ScreenSaverForm()

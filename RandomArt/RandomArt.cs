@@ -1,5 +1,6 @@
 using System.ComponentModel.Design.Serialization;
 using System.Configuration;
+using System.Data;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
@@ -12,7 +13,6 @@ namespace RandomArtScreensaver
         #region Static Methods for Screen Saver Functionality
         private Random _random = new Random();
         private bool Drawing = false;
-        private bool _alpha = true;
         public System.Windows.Forms.Timer tmrPlasma = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrPlasmaBlend = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrDot = new System.Windows.Forms.Timer();
@@ -181,7 +181,7 @@ namespace RandomArtScreensaver
                     if (randomNumber < cumulativeFrequency)
                     {
                         _artType = (int)_a.Type;
-                        _alpha = _a.Alpha;
+                        Alpha = _a.Alpha;
                         break;
                     }
                 }
@@ -189,12 +189,12 @@ namespace RandomArtScreensaver
                     if (Settings.All_artType == null)
                     {
                         Settings.All_artType = _artType;
-                        Settings.All_Alpha = _alpha;
+                        Settings.All_Alpha = Alpha;
                     }
                     else
                     {
                         _artType = Settings.All_artType;
-                        _alpha = Settings.All_Alpha;
+                        Alpha = Settings.All_Alpha;
                     }
                 }
                 Settings.Log("ArtType:" + _artType);
@@ -346,150 +346,79 @@ namespace RandomArtScreensaver
         {
             if (Settings.saverSettings == null) return;
             int l = _random.Next(Settings.saverSettings.dot.SplashSize * 100) + 1;
-            int h = 1;
+            int p = 1;
+            if (Settings.saverSettings.dot.Large) p = 2;
             int tries = 0;
-            if (Settings.saverSettings.dot.Large) h = 2;
             for (int i = 0; i <= l; i++)
             {
                 int d = _random.Next(4);
 
-                if (d == 0)
+                switch (d)
                 {
-                    if (x < Width) x += h;
-                    else tries++;
+                    case 0:
+                        if (x < Width) x += p;
+                        else tries++;
+                        break;
+                    case 1:
+                        if (y < Height) y += p;
+                        else tries++;
+                        break;
+                    case 2:
+                        if (x > 0) x -= p;
+                        else tries++;
+                        break;
+                    case 3: //3
+                        if (y > 0) y -= p;
+                        else tries++;
+                        break;
                 }
-                else if (d == 1)
-                {
-                    if (y < Height) y += h;
-                    else tries++;
-                }
-                else if (d == 2)
-                {
-                    if (x > 0) x -= h;
-                    else tries++;
-                }
-                else // d == 3
-                {
-                    if (y > 0) y -= h;
-                    else tries++;
-                }
-
                 if (tries > 10) break;
 
                 // Directly set the pixel color in the bitmap data
                 Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, x, y);
                 if (c.A != 0)
                 {
-                    d = _random.Next(4);
-                    switch (d)
-                    {
-                        case 0:
-                            x = x - h;
-                            break;
-                        case 1:
-                            y = y - h;
-                            break;
-                        case 2:
-                            if(!Settings.saverSettings.dot.Large) y = y + h;
-                            break;
-                        case 3:
-                            if(!Settings.saverSettings.dot.Large) x = x + h;
-                            break;
-                    }
-                    Color n = BlendColors(c, color, i / l);
+                    Color n  = BlendColors(c, color, i / l);
+                    int newX = x;
+                    int newY = y;
                     if (Settings.saverSettings.dot.Large)
-                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x, y, n);
-                    else
-                        DrawPixel(pixelPtr, stride, bytesPerPixel, x, y, n);
-                }
-            }
-        }
-        unsafe private void DrawSplash2(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color, int maxRadius)
-        {
-            //unused code, saving just in case.
-            int centerX = x;
-            int centerY = y;
-            int r = color.R;
-            int g = color.G;
-            int b = color.B;
-
-            try
-            {
-                unsafe
-                {
-                    decimal alphaStep = Decimal.Divide(100, maxRadius);
-                    int maxAlpha = 255; // the most opaque it will get = center
-                    if (_alpha) maxAlpha = 255;
-                    decimal start = 1;
-                    bool[,] done = new bool[2 * maxRadius + 1, 2 * maxRadius + 1];
-                    for (int currentRadius = 1; currentRadius <= maxRadius; currentRadius++)
                     {
-                        // Calculate alpha, modified by centerTransparencyPercent and fadeStartPercent
-                        int alpha;
-                        if (currentRadius < start)
+                        d = _random.Next(2);
+                        switch (d)
                         {
-                            alpha = maxAlpha; // Fully opaque before fadeStart
+                            case 0:
+                                //horizontal
+                                d = _random.Next(1) - 1;
+                                newX = x + d;
+                                break;
+                            case 1:
+                                //vertical
+                                d = _random.Next(1) - 1;
+                                newY = y + d;
+                                break;
                         }
-                        else
-                        {
-                            // Calculate alpha, modified by centerTransparencyPercent and fadeStartPercent
-                            decimal CurrentStep = alphaStep * (currentRadius - start);
-                            CurrentStep = Math.Min(100, Math.Max(0, CurrentStep)); // cap it
-                            alpha = (byte)(maxAlpha - (maxAlpha * (CurrentStep * (decimal).01)));
-                        }
-                        byte a = (byte)alpha;
-                        float normalizedBallA = a / 255.0f;
-
-                        for (int xOffset = -currentRadius; xOffset <= currentRadius; xOffset++)
-                        {
-                            for (int yOffset = -currentRadius; yOffset <= currentRadius; yOffset++)
-                            {
-                                if ((xOffset * xOffset) + (yOffset * yOffset) >= (currentRadius - 1) * (currentRadius - 1) &&
-                                    (xOffset * xOffset) + (yOffset * yOffset) <= currentRadius * currentRadius)
-                                {
-                                    int x2 = centerX + xOffset;
-                                    int y2 = centerY + yOffset;
-                                    int doneX = xOffset + maxRadius;
-                                    int doneY = yOffset + maxRadius;
-
-                                    if (x2 >= 0 && x2 < Width && y2 >= 0 && y2 < Height &&
-                                        doneX >= 0 && doneX < 2 * maxRadius + 1 && doneY >= 0 && doneY < 2 * maxRadius + 1 &&
-                                        !done[doneX, doneY])
-                                    {
-                                        int offset = y2 * stride + x2 * bytesPerPixel;
-                                        if (offset >= 0 && offset < stride * _screenBuffer.Height)
-                                        {
-                                            Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, x2, y2);
-                                            if (c.A != 0)
-                                            {
-                                                byte currentB = pixelPtr[offset];
-                                                byte currentG = pixelPtr[offset + 1];
-                                                byte currentR = pixelPtr[offset + 2];
-                                                byte currentBufferA = pixelPtr[offset + 3];
-
-                                                byte newB = (byte)((b * normalizedBallA) + (currentB * (1 - normalizedBallA)));
-                                                byte newG = (byte)((g * normalizedBallA) + (currentG * (1 - normalizedBallA)));
-                                                byte newR = (byte)((r * normalizedBallA) + (currentR * (1 - normalizedBallA)));
-                                                byte newA = (byte)Math.Min(255, a + currentBufferA * (1 - normalizedBallA));
-
-                                                pixelPtr[offset] = newB;
-                                                pixelPtr[offset + 1] = newG;
-                                                pixelPtr[offset + 2] = newR;
-                                                pixelPtr[offset + 3] = newA;
-                                            }
-
-                                            done[doneX, doneY] = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, newX, newY, n);
                     }
+                    else
+                    {
+                        d = _random.Next(2);
+                        switch (d)
+                        {
+                            case 0:
+                                //horizontal
+                                d = _random.Next(3) - 1;
+                                newX = x + d;
+                                break;
+                            case 1:
+                                //vertical
+                                d = _random.Next(3) - 1;
+                                newY = y + d;
+                                break;
+                        }
+                        DrawPixel(pixelPtr, stride, bytesPerPixel, newX, newY, n);
+                    }
+                        
                 }
-            }
-            finally
-            {
-                //do nothing
             }
         }
         unsafe private void DrawSplashGrow(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color)
@@ -531,12 +460,12 @@ namespace RandomArtScreensaver
                     if (Settings.saverSettings.grow.Large)
                     {
                         d = _random.Next(2) - 1;
-                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x + d, y, n);
+                        DrawLargePixel(pixelPtr, stride, bytesPerPixel, x + d, y + 1, n);
                     }
                     else
                     {
                         d = _random.Next(3) - 1;
-                        DrawPixel(pixelPtr, stride, bytesPerPixel, x + d, y + 1, n); 
+                        DrawPixel(pixelPtr, stride, bytesPerPixel, x + d, y + 2, n); 
                     } 
                 }
             }
@@ -591,7 +520,7 @@ namespace RandomArtScreensaver
             int g = _random.Next(256);
             int b = _random.Next(256);
             int a = _random.Next(256);
-            if (_alpha) a = 255;
+            if (Alpha) a = 255;
             int l = _random.Next((Width + Height) * Settings.saverSettings.scribble.Length);
 
             int x = _random.Next(Width + 1);
@@ -666,9 +595,9 @@ namespace RandomArtScreensaver
             int g = _random.Next(256);
             int b = _random.Next(256);
             int a = _random.Next(256);
-            if (_alpha) a = 255;
+            if (Alpha) a = 255;
             int x = _random.Next(Width + 1);
-            int h = Height - 1;
+            int h = Height + 1;
             int p = 1;
             if (Settings.saverSettings.grow.Large) p = 2;
 
@@ -684,20 +613,24 @@ namespace RandomArtScreensaver
                 {
                     byte* pixelPtr = (byte*)ptr;
 
-                    for (int y = 0; y <= Height; y += p)
+                    for (int y = 0; y <= h; y += p)
                     {
                         int checkY = h - y;
-                        if (checkY < 0) break;
-
                         if (x >= 0 && x < Width && checkY >= 0 && checkY < Height)
                         {
+                            if (checkY <= p)
+                            {
+                                SetUp();
+                                bmpData = null;
+                                break;
+                            }
                             int offset = checkY * stride + x * bytesPerPixel;
                             if (offset >= 0 && offset < stride * _screenBuffer.Height)
                             {
                                 // Get the current pixel's alpha value directly from memory
-                                byte currentAlpha = pixelPtr[offset + 3];
+                                Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, x, checkY);
 
-                                if (currentAlpha == 0)
+                                if (c.A == 0)
                                 {
                                     // Set the new pixel color
                                     if (Settings.saverSettings.dot.Large)
@@ -708,12 +641,6 @@ namespace RandomArtScreensaver
                                     break;
                                 }
                             }
-                        }
-
-                        if (y == Height)
-                        {
-                            SetUp();
-                            break;
                         }
                     }
                 }
@@ -740,7 +667,7 @@ namespace RandomArtScreensaver
             int g = _random.Next(256);
             int b = _random.Next(256);
             int a = _random.Next(256);
-            if (_alpha) a = 255;
+            if (Alpha) a = 255;
             int x = _random.Next(Width + 1);
             int y = _random.Next(Height + 1);
 
@@ -785,7 +712,7 @@ namespace RandomArtScreensaver
             int g = _random.Next(256);
             int b = _random.Next(256);
             int a = _random.Next(256);
-            if (_alpha) a = 255;
+            if (Alpha) a = 255;
             int x = _random.Next(Width + 1);
             int y = _random.Next(Height + 1);
 
@@ -888,7 +815,7 @@ namespace RandomArtScreensaver
                                     int G = prevColor.G + _random.Next(-1, 2);
                                     int B = prevColor.B + _random.Next(-1, 2);
                                     int A = prevColor.A + _random.Next(-1, 2);
-                                    if (_alpha) A = 255;
+                                    if (Alpha) A = 255;
                                     if (R > 255) R = 255;
                                     if (R < 0) R = 0;
                                     if (G > 255) G = 255;
@@ -1028,7 +955,7 @@ namespace RandomArtScreensaver
                     byte* pixelPtr = (byte*)ptr;
                     decimal alphaStep = Decimal.Divide(100, maxRadius - (Settings.saverSettings.light.Center * maxRadius));
                     int maxAlpha = (int)((1 - Settings.saverSettings.light.Transparent) * 255); // the most opaque it will get = center
-                    if (_alpha) maxAlpha = 255;
+                    if (Alpha) maxAlpha = 255;
                     decimal start = Settings.saverSettings.light.Center * maxRadius;
                     bool[,] done = new bool[2 * maxRadius + 1, 2 * maxRadius + 1];
                     for (int currentRadius = 1; currentRadius <= maxRadius; currentRadius++)
@@ -1134,7 +1061,7 @@ namespace RandomArtScreensaver
                     bool[,] done = new bool[2 * maxRadius + 1, 2 * maxRadius + 1];
                     decimal start = Settings.saverSettings.bubble.Center * maxRadius;
                     int maxAlpha = (int)((1 - Settings.saverSettings.bubble.Transparent) * 255); // the most opaque it will get = edge
-                    if (_alpha) maxAlpha = 255;
+                    if (Alpha) maxAlpha = 255;
                     for (int currentRadius = (int)start; currentRadius <= maxRadius; currentRadius++)
                     {
                         // Calculate alpha, modified by centerTransparencyPercent and fadeStartPercent
@@ -1254,13 +1181,13 @@ namespace RandomArtScreensaver
 
                     //randomize color in all corners
                     Color cColor = Color.FromArgb(_random.Next(255), _random.Next(255), _random.Next(255), _random.Next(255));
-                    if (_alpha) cColor = Color.FromArgb(255, cColor.R, cColor.G, cColor.B);
+                    if (Alpha) cColor = Color.FromArgb(255, cColor.R, cColor.G, cColor.B);
 
                     while (i < ColorAmount * ColorAmount) //ColorAmount = 1-7 - keep going until we have have found empty pixel
                     {
                         int[] iC = { cColor.A, cColor.R, cColor.G, cColor.B };
                         int cnt = 4;
-                        if (_alpha) cnt = 3;
+                        if (Alpha) cnt = 3;
                         for (int c = 0; c < cnt; c++)
                         {
                             int r = _random.Next(0, 2);
