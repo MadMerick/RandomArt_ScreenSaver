@@ -385,7 +385,7 @@ namespace RandomArtScreensaver.Forms
             // sldDotSplash
             // 
             sldDotSplash.Location = new Point(10, 192);
-            sldDotSplash.Maximum = 100;
+            sldDotSplash.Maximum = 50;
             sldDotSplash.Minimum = 1;
             sldDotSplash.Name = "sldDotSplash";
             sldDotSplash.Size = new Size(17, 45);

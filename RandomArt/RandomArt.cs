@@ -345,6 +345,8 @@ namespace RandomArtScreensaver
         unsafe private void DrawSplashDot(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color)
         {
             if (Settings.saverSettings == null) return;
+            int startX = x;
+            int startY = y;
             int l = _random.Next(Settings.saverSettings.dot.SplashSize * 100) + 1;
             int p = 1;
             if (Settings.saverSettings.dot.Large) p = 2;
@@ -355,22 +357,10 @@ namespace RandomArtScreensaver
 
                 switch (d)
                 {
-                    case 0:
-                        if (x < Width) x += p;
-                        else tries++;
-                        break;
-                    case 1:
-                        if (y < Height) y += p;
-                        else tries++;
-                        break;
-                    case 2:
-                        if (x > 0) x -= p;
-                        else tries++;
-                        break;
-                    case 3: //3
-                        if (y > 0) y -= p;
-                        else tries++;
-                        break;
+                    case 0: if (x < Width) x += p; else tries++; break;
+                    case 1: if (y < Height) y += p; else tries++; break;
+                    case 2: if (x > 0) x -= p; else tries++; break;
+                    case 3: if (y > 0) y -= p; else tries++; break;
                 }
                 if (tries > 10) break;
 
@@ -378,7 +368,11 @@ namespace RandomArtScreensaver
                 Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, x, y);
                 if (c.A != 0)
                 {
-                    Color n  = BlendColors(c, color, i / l);
+                    // Distance-based fade
+                    float dist = MathF.Sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY));
+                    float fade = Math.Clamp(1.0f - (dist / 10), 0f, 1f);
+                    decimal blendFactor = decimal.Divide(i, l) * (decimal)fade;
+                    Color n  = BlendColors(c, color, blendFactor);
                     int newX = x;
                     int newY = y;
                     if (Settings.saverSettings.dot.Large)
@@ -424,6 +418,8 @@ namespace RandomArtScreensaver
         unsafe private void DrawSplashGrow(byte* pixelPtr, int stride, int bytesPerPixel, int x, int y, Color color)
         {
             if (Settings.saverSettings == null) return;
+            int startX = x;
+            int startY = y;
             int l = _random.Next(Settings.saverSettings.grow.SplashSize * 100) + 1;
             int h = 1;
             if (Settings.saverSettings.grow.Large) h = 2;
@@ -456,7 +452,10 @@ namespace RandomArtScreensaver
                 Color c = GetPixelColor(pixelPtr, stride, bytesPerPixel, x, y);
                 if (c.A != 0)
                 {
-                    Color n = BlendColors(c, color, i / l);
+                    float dist = MathF.Sqrt((x - startX) * (x - startX) + (y - startY) * (y - startY));
+                    float fade = Math.Clamp(1.0f - (dist / 10), 0f, 1f);
+                    decimal blendFactor = decimal.Divide(i, l) * (decimal)fade;
+                    Color n  = BlendColors(c, color, blendFactor);
                     if (Settings.saverSettings.grow.Large)
                     {
                         d = _random.Next(2) - 1;
@@ -470,14 +469,14 @@ namespace RandomArtScreensaver
                 }
             }
         }
-        public static Color BlendColors(Color baseColor, Color overlayColor, float blendFactor)
+        public static Color BlendColors(Color baseColor, Color overlayColor, decimal blendFactor)
         {
             // Ensure the blendFactor is between 0.0 and 1.0
-            if (blendFactor < 0.0f) blendFactor = 0.0f;
-            if (blendFactor > 1.0f) blendFactor = 1.0f;
+            if (blendFactor < (decimal)0.0f) blendFactor = (decimal)0.0f;
+            if (blendFactor > (decimal)1.0f) blendFactor = (decimal)1.0f;
 
             // Calculate the inverse factor for the base color
-            float inverseFactor = 1.0f - blendFactor;
+            decimal inverseFactor = (decimal)1.0f - blendFactor;
 
             // Linearly interpolate each color component
             int r = (int)(baseColor.R * inverseFactor + overlayColor.R * blendFactor);

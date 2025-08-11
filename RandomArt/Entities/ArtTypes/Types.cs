@@ -17,7 +17,7 @@ namespace RandomArtScreensaver.Entities.Types
     public class Dot
     {
         public bool Large { get; set; } = true;
-        public int SplashSize { get; set; } = 50; //1-100;
+        public int SplashSize { get; set; } = 5; //1-50;
     }
     public class Grow
     {
