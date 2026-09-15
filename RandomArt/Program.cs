@@ -38,6 +38,64 @@ namespace RandomArtScreensaver
         private const string GitHubRepo = "RandomArt_ScreenSaver";
 
         #endregion
+        public enum StartupMode
+        {
+            FullScreen,
+            Settings,
+            Preview,
+            Unknown
+        }
+
+        public static StartupMode ParseStartupMode(string[] args)
+        {
+            if (args == null || args.Length == 0)
+                return StartupMode.FullScreen;
+
+            string firstArgument = args[0].Trim();
+            if (string.IsNullOrWhiteSpace(firstArgument))
+                return StartupMode.FullScreen;
+
+            firstArgument = firstArgument.ToLowerInvariant();
+            if (firstArgument.StartsWith("/c", StringComparison.Ordinal))
+                return StartupMode.Settings;
+            if (firstArgument.StartsWith("/p", StringComparison.Ordinal))
+                return StartupMode.Preview;
+            if (firstArgument.StartsWith("/s", StringComparison.Ordinal))
+                return StartupMode.FullScreen;
+
+            return StartupMode.Unknown;
+        }
+
+        public static bool TryParsePreviewHandle(string[] args, out IntPtr previewHandle)
+        {
+            previewHandle = IntPtr.Zero;
+            if (args == null || args.Length == 0)
+                return false;
+
+            string candidate = args[0].Trim();
+            if (candidate.StartsWith("/p", StringComparison.OrdinalIgnoreCase) && candidate.Length > 2)
+            {
+                candidate = candidate.Substring(2).Trim();
+            }
+            else if (args.Length > 1)
+            {
+                candidate = args[1].Trim();
+            }
+
+            if (string.IsNullOrWhiteSpace(candidate))
+                return false;
+
+            try
+            {
+                previewHandle = new IntPtr(long.Parse(candidate));
+                return previewHandle != IntPtr.Zero;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         [STAThread]
         static void Main(string[] args)
         {
@@ -49,64 +107,48 @@ namespace RandomArtScreensaver
                 }
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                if (args.Length > 0)
+
+                StartupMode mode = ParseStartupMode(args);
+                switch (mode)
                 {
-                    string firstArgument = args[0].ToLower().Trim();
-                    string? secondArgument = null;
-
-                    // Handle cases where "/c:" or "/p:" might have parameters
-                    if (firstArgument.Length > 2)
-                    {
-                        secondArgument = firstArgument.Substring(3).Trim();
-                        firstArgument = firstArgument.Substring(0, 2);
-                    }
-                    else if (args.Length > 1)
-                    {
-                        secondArgument = args[1];
-                    }
-
-                    if (firstArgument == "/c")         // Configuration Mode
-                    {
+                    case StartupMode.Settings:
                         ShowSettingsForm();
-                    }
-                    else if (firstArgument == "/p")    // Preview Mode
-                    {
-                        if (secondArgument != null)
+                        return;
+                    case StartupMode.Preview:
+                        if (TryParsePreviewHandle(args, out IntPtr previewHandle))
                         {
-                            IntPtr previewHandle = new IntPtr(long.Parse(secondArgument));
                             RunPreview(previewHandle);
+                            return;
                         }
-                    }
-                    else if (firstArgument == "/s")    // Full-screen Mode
-                    {
+                        MessageBox.Show("Preview mode was started without a valid window handle.", "Random Art", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    case StartupMode.FullScreen:
+                    default:
                         ShowTitleScreenAndRun();
-                    }
-                    else // No arguments or invalid arguments
-                    {
-                        // Run in full-screen mode by default or show settings?
-                        ShowTitleScreenAndRun();
-                    }
-                }
-                else // No arguments
-                {
-                    // Run in full-screen mode by default or show settings?
-                    ShowTitleScreenAndRun();
-                    //ShowSettingsForm();
+                        return;
                 }
             }
             catch (Exception ex)
             {
-                // Log the exception details
                 Settings.Log($"Exception in Main: {ex.Message}");
                 Settings.Log($"Stack Trace: {ex.StackTrace}");
-                // Potentially show an error message or handle the error as needed
+                MessageBox.Show($"Random Art failed to start:\n\n{ex.Message}\n\nSee the log file in the LocalApplicationData\\RandomArt folder for details.", "Random Art Startup Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         public static void ShowSettingsForm()
         {
-            Settings.Log("Started ShowSettingsForm");
-            Forms.SettingsForm settingsForm = new Forms.SettingsForm();
-            Application.Run(settingsForm);
+            try
+            {
+                Settings.Log("Started ShowSettingsForm");
+                Forms.SettingsForm settingsForm = new Forms.SettingsForm();
+                Application.Run(settingsForm);
+            }
+            catch (Exception ex)
+            {
+                Settings.Log($"Exception in ShowSettingsForm: {ex.Message}");
+                Settings.Log($"Stack Trace: {ex.StackTrace}");
+                MessageBox.Show($"The settings dialog could not be opened:\n\n{ex.Message}", "Random Art Settings Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         public static void RunPreview(IntPtr previewHandle) {
             Settings.Log("Started RunPreview:" + previewHandle);

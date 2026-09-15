@@ -95,19 +95,24 @@ namespace RandomArtScreensaver
             }
         }
         public static void Log(string message) {
-            DirectoryInfo? sPath = Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-            if (sPath == null) return;
-            string fullpath = sPath + FilePath;
-            if (!Directory.Exists(fullpath))
-                Directory.CreateDirectory(fullpath);
-            string sFile = Path.Combine(fullpath, logFileName);
-            Console.WriteLine(message);
-            if (Program.Logging) {
-                using (StreamWriter file = File.Exists(sFile) ? File.AppendText(sFile) : File.CreateText(sFile))
-                {
-                    file.Write(DateTime.Now.ToShortDateString() + " - " + message);
-                    file.Write(Environment.NewLine);
+            try
+            {
+                string fullpath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RandomArt");
+                if (!Directory.Exists(fullpath))
+                    Directory.CreateDirectory(fullpath);
+                string sFile = Path.Combine(fullpath, logFileName);
+                Console.WriteLine(message);
+                if (Program.Logging) {
+                    using (StreamWriter file = File.Exists(sFile) ? File.AppendText(sFile) : File.CreateText(sFile))
+                    {
+                        file.Write(DateTime.Now.ToShortDateString() + " - " + message);
+                        file.Write(Environment.NewLine);
+                    }
                 }
+            }
+            catch
+            {
+                // Logging must not mask the original startup failure.
             }
         }
     }

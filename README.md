@@ -84,12 +84,12 @@ The Random Art Screen Saver operates by:
 ### Prerequisites
 
 * Microsoft Windows operating system.
-* .NET Desktop Runtime (version specified in the project, currently likely .NET 9).
+* .NET 9 SDK is required to build from source. The published `win-x64` screensaver is self-contained and does not require a separate .NET runtime.
 
 ### Installation for End Users
 
 1.  **Download the `.scr` file:** Navigate to the [Releases](https://github.com/MadMerick/RandomArt_ScreenSaver/releases) section and download the latest compiled `.scr` file.
-2.  **Place the `.scr` file:** Copy the `.scr` file to the Windows System directory (`C:\Windows\System32` for 32-bit, `C:\Windows\SysWOW64` for 64-bit).
+2.  **Place the `.scr` file:** Copy the `.scr` file to the Windows System directory. Use `C:\Windows\System32` for a `win-x64` build and `C:\Windows\SysWOW64` for a `win-x86` build.
 3.  **Activate the Screen Saver:** Follow the standard Windows steps to select and activate the "Random Art Screen Saver" in the Screen Saver Settings.
 
 ### Building from Source (for Developers)
@@ -103,9 +103,9 @@ The Random Art Screen Saver operates by:
     * Microsoft Visual Studio (or a compatible C# development environment).
     * .NET SDK (version 9 or as specified in the `.csproj` file).
 3.  **Open the Solution:** Open `RandomArt.sln` in Visual Studio.
-4.  **Build the Project:** Build the "RandomArt" project in Release configuration.
-5.  **Create the `.scr` File:** Rename the output executable (`.exe`) to `RandomArt.scr`.
-6.  **Install as Screen Saver:** Place the `.scr` file in the Windows System directory.
+4.  **Publish the Project:** Run `dotnet publish RandomArt\RandomArt.csproj -c Release -r win-x64 --self-contained true`.
+5.  **Create the `.scr` File:** Rename the executable from `RandomArt\bin\Release\net9.0-windows\win-x64\publish\RandomArt.exe` to `RandomArt.scr`. Do not use the smaller executable from the parent `win-x64` directory; that is not the standalone published artifact.
+6.  **Install as Screen Saver:** Place the published `.scr` file in `C:\Windows\System32`.
 
 ## Future Enhancements
 
@@ -114,6 +114,21 @@ The Random Art Screen Saver operates by:
 * **Enhanced Image Handling:** Provide options for users to select image sources or control image display parameters.
 * **Performance Optimization:** Continue to refine the rendering and animation processes.
 * **User Presets:** Allow users to save and load their preferred configurations.
+
+## Release Validation
+
+Before publishing a new release, validate the Windows screensaver modes on a real Windows machine:
+
+1. Publish the project in Release mode with `dotnet publish RandomArt\RandomArt.csproj -c Release -r win-x64 --self-contained true`.
+2. Rename `RandomArt\bin\Release\net9.0-windows\win-x64\publish\RandomArt.exe` to `RandomArt.scr`. The published file should be much larger than the ordinary build output because it contains the .NET runtime.
+3. Place the published `.scr` file in `C:\Windows\System32`.
+4. Open the Screen Saver Settings dialog and confirm the entry appears in the dropdown.
+5. Click `Preview` and confirm the monitor preview shows the art animation instead of a blank window.
+6. Click `Settings` and confirm the configuration dialog opens.
+7. Run the screensaver in full-screen mode with `/s` to confirm startup and exit behavior.
+8. If troubleshooting is needed, temporarily enable `Program.Logging` and check `%LOCALAPPDATA%\RandomArt\RandomArt.log`; leave logging disabled for the release build.
+
+For a reproducible automated check, the app should also expose a small argument-parsing test around `/s`, `/c`, and `/p` so startup mode regressions are caught without a heavy WinForms UI test suite.
 
 ## Contributing
 
