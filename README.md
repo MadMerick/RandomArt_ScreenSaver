@@ -37,6 +37,12 @@ The screen saver features the following art generation methods, with customizabl
     * **Speed:** Controls the speed of the warp animation (how fast one is traveling through the tunnel) (min: 1 (slow), max: 250 (fast), default: 10).
     * **Random Shape:** Enables or disables random variations in the shape of the warp tunnel (default: true).
     * **Shape:** Determines how round the tunnal is (min: 4 (diamond shaped), max: 100 (circular shaped), default: 50).
+* **Parabola:** Traces an ever-continuing, never-ending curve stitching / string-art effect: two points travel randomly around the outer edge of the screen, connected by a straight line drawn every step, whose overlapping paths trace out a parabola-like shape.
+    * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
+    * **Randomize:** Randomizes the step distance the points travel each time (default: true).
+    * **Distance:** Manually sets the distance (in pixels) each point moves per step when Randomize is off (min: 1, max: 100, default: 10).
+    * **Drift Over Time:** Lets the step distance slowly drift by +/-1 pixel per step over time instead of staying fixed, clamped between 1 and 100 pixels (default: true).
+    * **Smooth Colors:** Toggles whether each new line's color gradually shifts from the previous line's color, instead of picking a fully random color each time (default: true).
 * **Plasma:** Generates dynamic and colorful plasma effects.
     * **No Transparancy Colors:** Use all opaque color sets (alpha = 255).
     * **Type:** Selects the plasma generation type (full screen or mirrored effect (0=Random, 1=Mirror, 2=Full screen, default: 0).

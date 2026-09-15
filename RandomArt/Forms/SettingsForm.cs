@@ -33,6 +33,11 @@ namespace RandomArtScreensaver.Forms
         private CheckBox chkWarpSmooth = new CheckBox();
         private CheckBox chkWarpRand = new CheckBox();
         private TrackBar sldAngles = new TrackBar();
+        private CheckBox chkParabolaSmoothColor = new CheckBox();
+        private CheckBox chkParabolaRandDistance = new CheckBox();
+        private Label lblParabolaDistance = new Label();
+        private TrackBar sldParabolaDistance = new TrackBar();
+        private CheckBox chkParabolaDrift = new CheckBox();
         private Label lblLightTrans = new Label();
         private TrackBar sldLightTrans = new TrackBar();
         private Label lblBubbleTrans = new Label();
@@ -117,6 +122,11 @@ namespace RandomArtScreensaver.Forms
             chkWarpSmooth = new CheckBox();
             chkWarpRand = new CheckBox();
             sldAngles = new TrackBar();
+            chkParabolaSmoothColor = new CheckBox();
+            chkParabolaRandDistance = new CheckBox();
+            lblParabolaDistance = new Label();
+            sldParabolaDistance = new TrackBar();
+            chkParabolaDrift = new CheckBox();
             lblSpeed = new Label();
             lblSpeedMS = new Label();
             chkAlpha = new CheckBox();
@@ -298,6 +308,11 @@ namespace RandomArtScreensaver.Forms
             frmSettings.Controls.Add(chkWarpSmooth);
             frmSettings.Controls.Add(chkWarpRand);
             frmSettings.Controls.Add(sldAngles);
+            frmSettings.Controls.Add(chkParabolaSmoothColor);
+            frmSettings.Controls.Add(chkParabolaRandDistance);
+            frmSettings.Controls.Add(lblParabolaDistance);
+            frmSettings.Controls.Add(sldParabolaDistance);
+            frmSettings.Controls.Add(chkParabolaDrift);
             frmSettings.Controls.Add(lblSpeed);
             frmSettings.Controls.Add(lblSpeedMS);
             frmSettings.Controls.Add(chkAlpha);
@@ -565,6 +580,75 @@ namespace RandomArtScreensaver.Forms
             sldAngles.Cursor = System.Windows.Forms.Cursors.Hand;
             sldAngles.ValueChanged += sldAngles_ValueChanged;
             ToolTip1.SetToolTip(sldAngles, "Manually set the shape of the warp tunnel.");
+            // 
+            // chkParabolaSmoothColor
+            // 
+            chkParabolaSmoothColor.BackColor = SystemColors.Control;
+            chkParabolaSmoothColor.ForeColor = SystemColors.ControlText;
+            chkParabolaSmoothColor.Location = new Point(32, 48);
+            chkParabolaSmoothColor.Name = "chkParabolaSmoothColor";
+            chkParabolaSmoothColor.RightToLeft = RightToLeft.No;
+            chkParabolaSmoothColor.Size = new Size(105, 17);
+            chkParabolaSmoothColor.TabIndex = 40;
+            chkParabolaSmoothColor.Text = "Smooth Colors";
+            chkParabolaSmoothColor.UseVisualStyleBackColor = false;
+            chkParabolaSmoothColor.CheckedChanged += chkParabolaSmoothColor_CheckedChanged;
+            chkParabolaSmoothColor.Cursor = System.Windows.Forms.Cursors.Hand;
+            ToolTip1.SetToolTip(chkParabolaSmoothColor, "The line color will shift gradually instead of being fully random each line.");
+            // 
+            // chkParabolaRandDistance
+            // 
+            chkParabolaRandDistance.BackColor = SystemColors.Control;
+            chkParabolaRandDistance.ForeColor = SystemColors.ControlText;
+            chkParabolaRandDistance.Location = new Point(8, 167);
+            chkParabolaRandDistance.Name = "chkParabolaRandDistance";
+            chkParabolaRandDistance.RightToLeft = RightToLeft.No;
+            chkParabolaRandDistance.Size = new Size(73, 17);
+            chkParabolaRandDistance.TabIndex = 43;
+            chkParabolaRandDistance.Text = "Randomize:";
+            chkParabolaRandDistance.UseVisualStyleBackColor = false;
+            chkParabolaRandDistance.CheckedChanged += chkParabolaRandDistance_CheckedChanged;
+            chkParabolaRandDistance.Cursor = System.Windows.Forms.Cursors.Hand;
+            ToolTip1.SetToolTip(chkParabolaRandDistance, "Randomize the distance the points move each step.");
+            // 
+            // lblParabolaDistance
+            // 
+            lblParabolaDistance.BackColor = Color.Transparent;
+            lblParabolaDistance.ForeColor = SystemColors.ControlText;
+            lblParabolaDistance.Location = new Point(8, 24);
+            lblParabolaDistance.Name = "lblParabolaDistance";
+            lblParabolaDistance.RightToLeft = RightToLeft.No;
+            lblParabolaDistance.Size = new Size(33, 17);
+            lblParabolaDistance.TabIndex = 44;
+            lblParabolaDistance.Text = "Distance:";
+            lblParabolaDistance.TextAlign = ContentAlignment.TopCenter;
+            // 
+            // sldParabolaDistance
+            // 
+            sldParabolaDistance.Location = new Point(104, 190);
+            sldParabolaDistance.Maximum = 100;
+            sldParabolaDistance.Minimum = 1;
+            sldParabolaDistance.Name = "sldParabolaDistance";
+            sldParabolaDistance.Size = new Size(73, 45);
+            sldParabolaDistance.TabIndex = 45;
+            sldParabolaDistance.Cursor = System.Windows.Forms.Cursors.Hand;
+            sldParabolaDistance.ValueChanged += sldParabolaDistance_ValueChanged;
+            ToolTip1.SetToolTip(sldParabolaDistance, "Manually set the distance the points move each step.");
+            // 
+            // chkParabolaDrift
+            // 
+            chkParabolaDrift.BackColor = SystemColors.Control;
+            chkParabolaDrift.ForeColor = SystemColors.ControlText;
+            chkParabolaDrift.Location = new Point(8, 167);
+            chkParabolaDrift.Name = "chkParabolaDrift";
+            chkParabolaDrift.RightToLeft = RightToLeft.No;
+            chkParabolaDrift.Size = new Size(73, 17);
+            chkParabolaDrift.TabIndex = 46;
+            chkParabolaDrift.Text = "Drift Over Time";
+            chkParabolaDrift.UseVisualStyleBackColor = false;
+            chkParabolaDrift.CheckedChanged += chkParabolaDrift_CheckedChanged;
+            chkParabolaDrift.Cursor = System.Windows.Forms.Cursors.Hand;
+            ToolTip1.SetToolTip(chkParabolaDrift, "Let the distance slowly change over time instead of staying fixed.");
             // 
             // sldScribbleLen
             // 
@@ -1211,6 +1295,21 @@ namespace RandomArtScreensaver.Forms
             sldAngles.Top = lblWarp.Top;
             sldAngles.Left = lblWarp.Left + lblWarp.Width + 4;
             sldAngles.Width = frmSettings.Width - (sldAngles.Left + 8);
+            chkParabolaSmoothColor.Top = chkAlpha.Top + chkAlpha.Height + 8;
+            chkParabolaSmoothColor.Left = lblSpeed.Left;
+            chkParabolaSmoothColor.Width = frmSettings.Width - 16;
+            chkParabolaRandDistance.Top = chkParabolaSmoothColor.Top + chkParabolaSmoothColor.Height + 8;
+            chkParabolaRandDistance.Left = chkParabolaSmoothColor.Left;
+            chkParabolaRandDistance.Width = chkParabolaSmoothColor.Width;
+            lblParabolaDistance.Top = chkParabolaRandDistance.Top + chkParabolaRandDistance.Height + 8;
+            lblParabolaDistance.Left = chkParabolaRandDistance.Left;
+            lblParabolaDistance.Width = Program.TextWidth(lblParabolaDistance.Text, lblParabolaDistance.Font) + 4;
+            sldParabolaDistance.Top = lblParabolaDistance.Top;
+            sldParabolaDistance.Left = lblParabolaDistance.Left + lblParabolaDistance.Width + 4;
+            sldParabolaDistance.Width = frmSettings.Width - (sldParabolaDistance.Left + 8);
+            chkParabolaDrift.Top = sldParabolaDistance.Top + sldParabolaDistance.Height + 8;
+            chkParabolaDrift.Left = chkParabolaSmoothColor.Left;
+            chkParabolaDrift.Width = Program.TextWidth(chkParabolaDrift.Text, chkParabolaDrift.Font) + 22;
             optPlasma = new List<RadioButton>();
             optPlasma.Add(_optPlasma_0);
             optPlasma.Add(_optPlasma_1);
@@ -1397,6 +1496,25 @@ namespace RandomArtScreensaver.Forms
                 chkWarpRand.CheckState = System.Windows.Forms.CheckState.Checked;
             chkWarpRand_CheckedChanged(chkWarpRand, new System.EventArgs());
 
+            sldParabolaDistance.Value = Settings.saverSettings.parabola.Distance;
+            if (Settings.saverSettings.parabola.RandDistance == false)
+                chkParabolaRandDistance.CheckState = System.Windows.Forms.CheckState.Unchecked;
+            else
+                chkParabolaRandDistance.CheckState = System.Windows.Forms.CheckState.Checked;
+            chkParabolaRandDistance_CheckedChanged(chkParabolaRandDistance, new System.EventArgs());
+
+            if (Settings.saverSettings.parabola.Drift == false)
+                chkParabolaDrift.CheckState = System.Windows.Forms.CheckState.Unchecked;
+            else
+                chkParabolaDrift.CheckState = System.Windows.Forms.CheckState.Checked;
+            chkParabolaDrift_CheckedChanged(chkParabolaDrift, new System.EventArgs());
+
+            if (Settings.saverSettings.parabola.SmoothColor == false)
+                chkParabolaSmoothColor.CheckState = System.Windows.Forms.CheckState.Unchecked;
+            else
+                chkParabolaSmoothColor.CheckState = System.Windows.Forms.CheckState.Checked;
+            chkParabolaSmoothColor_CheckedChanged(chkParabolaSmoothColor, new System.EventArgs());
+
             sldScribbleLen.Value = Settings.saverSettings.scribble.Length;
 
             sldAngles.Value = Settings.saverSettings.warp.Angles;
@@ -1462,6 +1580,12 @@ namespace RandomArtScreensaver.Forms
             lblWarp.Visible = false;
             lblWarpSpeed.Visible = false;
             sldWarpSpeed.Visible = false;
+
+            chkParabolaSmoothColor.Visible = false;
+            chkParabolaRandDistance.Visible = false;
+            lblParabolaDistance.Visible = false;
+            sldParabolaDistance.Visible = false;
+            chkParabolaDrift.Visible = false;
 
             lblLightCenter.Visible = false;
             lblLightTrans.Visible = false;
@@ -1552,6 +1676,17 @@ namespace RandomArtScreensaver.Forms
                 txtSpeed.Text = s != null ? s.Speed.ToString() : "100";
                 chkAlpha.Checked = s != null ? s.Alpha : false;
             }
+            else if (ItmX == Enum.GetName(typeof(ArtTypeEnum), ArtTypeEnum.Parabola))
+            {
+                chkParabolaSmoothColor.Visible = true;
+                chkParabolaRandDistance.Visible = true;
+                lblParabolaDistance.Visible = true;
+                sldParabolaDistance.Visible = true;
+                chkParabolaDrift.Visible = true;
+                s = Settings.saverSettings.artTypes.Find(o => o.Type == ArtTypeEnum.Parabola);
+                txtSpeed.Text = s != null ? s.Speed.ToString() : "10";
+                chkAlpha.Checked = s != null ? s.Alpha : false;
+            }
             else if (ItmX == Enum.GetName(typeof(ArtTypeEnum), ArtTypeEnum.Bubbles))
             {
                 lblBubbleCenter.Visible = true;
@@ -1637,7 +1772,7 @@ namespace RandomArtScreensaver.Forms
                     if (Itm.Text == sName) {
                         a.Percentage = Convert.ToInt32(txtListEdit.Text);
                         Itm.SubItems[1].Text = txtListEdit.Text + "%";
-                        //CalPer(Itm);
+                        CalPer(Itm);
                         break;
                     }
                 }
@@ -1710,6 +1845,43 @@ namespace RandomArtScreensaver.Forms
         {
             if (Settings.saverSettings == null) return;
             Settings.saverSettings.warp.Angles = sldAngles.Value;
+        }
+        private void sldParabolaDistance_ValueChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            Settings.saverSettings.parabola.Distance = sldParabolaDistance.Value;
+        }
+        private void chkParabolaRandDistance_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            if (chkParabolaRandDistance.CheckState == CheckState.Checked)
+            {
+                Settings.saverSettings.parabola.RandDistance = true;
+                sldParabolaDistance.Enabled = false;
+                lblParabolaDistance.Enabled = false;
+            }
+            else
+            {
+                Settings.saverSettings.parabola.RandDistance = false;
+                sldParabolaDistance.Enabled = true;
+                lblParabolaDistance.Enabled = true;
+            }
+            NewDemo();
+        }
+        private void chkParabolaDrift_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            Settings.saverSettings.parabola.Drift = chkParabolaDrift.CheckState == CheckState.Checked;
+            NewDemo();
+        }
+        private void chkParabolaSmoothColor_CheckedChanged(object? sender, EventArgs e)
+        {
+            if (Settings.saverSettings == null) return;
+            if (chkParabolaSmoothColor.CheckState == CheckState.Checked)
+                Settings.saverSettings.parabola.SmoothColor = true;
+            else
+                Settings.saverSettings.parabola.SmoothColor = false;
+            NewDemo();
         }
         private void _optPlasma_0_CheckedChanged(object? sender, EventArgs e)
         {
@@ -2048,58 +2220,64 @@ namespace RandomArtScreensaver.Forms
         private void CalPer(ListViewItem ItmX)
         {
             if (Settings.saverSettings == null) return;
-            double Cntr = 0;
+
+            int editedValue = Math.Clamp((int)Val(ItmX.SubItems[1].Text), 0, 100);
+            List<ListViewItem> others = new List<ListViewItem>();
             foreach (ListViewItem Item in lstTypes.Items)
-                Cntr = Cntr + Val(Item.SubItems[1].Text);
-            if (Cntr > 100)
+                if (Item != ItmX) others.Add(Item);
+
+            int remaining = 100 - editedValue;
+            int othersSum = 0;
+            foreach (ListViewItem Item in others)
+                othersSum += (int)Val(Item.SubItems[1].Text);
+
+            int[] newValues = new int[others.Count];
+            if (othersSum <= 0)
             {
-                while (Cntr != 100)
+                // Nothing to scale from - split the remainder evenly across the other rows.
+                for (int i = 0; i < others.Count; i++)
+                    newValues[i] = remaining / others.Count + (i < remaining % others.Count ? 1 : 0);
+            }
+            else
+            {
+                // Scale each other row proportionally to its current share of the total.
+                int assigned = 0;
+                for (int i = 0; i < others.Count; i++)
                 {
-                    foreach (ListViewItem Item in lstTypes.Items)
-                    {
-                        if (Item.Text != ItmX.Text)
-                        {
-                            if (Val(Item.SubItems[1].Text) > 0)
-                            {
-                                Item.SubItems[1].Text = Val(Item.SubItems[1].Text) - 1 + "%";
-                                foreach (ArtType a in Settings.saverSettings.artTypes) {
-                                    string? sName = Enum.GetName(typeof(ArtTypeEnum), a.Type);
-                                    if (string.IsNullOrEmpty(sName)) sName = a.Type.ToString();
-                                    if (Item.Text == sName) {
-                                        a.Percentage = Convert.ToInt32(Val(Item.SubItems[1].Text));
-                                        break;
-                                    }
-                                }
-                                Cntr = Cntr - 1;
-                                if (Cntr == 100)
-                                    break;
-                            }
-                        }
-                    }
+                    int oldValue = (int)Val(others[i].SubItems[1].Text);
+                    newValues[i] = (int)Math.Round((double)oldValue * remaining / othersSum);
+                    assigned += newValues[i];
+                }
+                // Rounding can leave the sum off by a few percent - nudge the largest rows to close the gap.
+                int drift = remaining - assigned;
+                int[] order = Enumerable.Range(0, others.Count).OrderByDescending(i => newValues[i]).ToArray();
+                int oi = 0;
+                while (drift != 0 && others.Count > 0)
+                {
+                    int idx = order[oi % order.Length];
+                    if (drift > 0) { newValues[idx]++; drift--; }
+                    else if (newValues[idx] > 0) { newValues[idx]--; drift++; }
+                    oi++;
+                    if (oi > order.Length * 200) break; // safety net, should never be hit
                 }
             }
-            else if (Cntr < 100)
+
+            for (int i = 0; i < others.Count; i++)
+                SetPercentage(others[i], newValues[i]);
+            SetPercentage(ItmX, editedValue);
+        }
+        private void SetPercentage(ListViewItem Item, int percentage)
+        {
+            if (Settings.saverSettings == null) return;
+            Item.SubItems[1].Text = percentage + "%";
+            foreach (ArtType a in Settings.saverSettings.artTypes)
             {
-                while (Cntr < 100)
+                string? sName = Enum.GetName(typeof(ArtTypeEnum), a.Type);
+                if (string.IsNullOrEmpty(sName)) sName = a.Type.ToString();
+                if (Item.Text == sName)
                 {
-                    foreach (ListViewItem Item in lstTypes.Items)
-                    {
-                        if (Item.Text != ItmX.Text)
-                        {
-                            Item.SubItems[1].Text = Val(Item.SubItems[1].Text) + 1 + "%";
-                            foreach (ArtType a in Settings.saverSettings.artTypes) {
-                                string? sName = Enum.GetName(typeof(ArtTypeEnum), a.Type);
-                                if (string.IsNullOrEmpty(sName)) sName = a.Type.ToString();
-                                if (Item.Text == sName) {
-                                    a.Percentage = Convert.ToInt32(Val(Item.SubItems[1].Text));
-                                    break;
-                                }
-                            }
-                            Cntr = Cntr + 1;
-                            if (Cntr == 100)
-                                break;
-                        }
-                    }
+                    a.Percentage = percentage;
+                    break;
                 }
             }
         }

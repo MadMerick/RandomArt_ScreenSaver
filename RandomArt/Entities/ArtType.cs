@@ -31,5 +31,6 @@ namespace RandomArtScreensaver.Entities
         Bubbles = 5,
         Warp = 6,
         Plasma = 7,
+        Parabola = 8,
     }
 }

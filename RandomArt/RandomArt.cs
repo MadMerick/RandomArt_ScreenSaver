@@ -22,8 +22,13 @@ namespace RandomArtScreensaver
         public System.Windows.Forms.Timer tmrGrow = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrBubbles = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrLight = new System.Windows.Forms.Timer();
+        public System.Windows.Forms.Timer tmrParabola = new System.Windows.Forms.Timer();
         int Angles = 0;
         bool MirrorType;
+        private double _parabolaPosA;
+        private double _parabolaPosB;
+        private int _parabolaDistance;
+        private Color _parabolaColor;
         public int? _artType = null;
         private Color[,] _Pixels = new Color[1,1];
         private Bitmap? _screenBuffer;
@@ -92,6 +97,12 @@ namespace RandomArtScreensaver
             s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Grow);
             tmrGrow.Interval = s != null ? s.Speed : 10;
             tmrGrow.Tick += tmrGrow_Tick;
+            // 
+            // tmrParabola
+            // 
+            s = Settings.saverSettings.artTypes.Find(o => o.Type == Entities.ArtTypeEnum.Parabola);
+            tmrParabola.Interval = s != null ? s.Speed : 10;
+            tmrParabola.Tick += tmrParabola_Tick;
         }
         public RandomArt(Rectangle parentRect, int isDemo)
         {
@@ -124,6 +135,10 @@ namespace RandomArtScreensaver
         private void tmrWarp_Tick(object? sender, EventArgs e)
         {
             DoWarp();
+        }
+        private void tmrParabola_Tick(object? sender, EventArgs e)
+        {
+            DoParabola();
         }
         private void tmrDot_Tick(object? sender, EventArgs e)
         {
@@ -235,6 +250,11 @@ namespace RandomArtScreensaver
                         SetUp();
                         tmrWeeds.Start();
                         break;
+                    case (int)Entities.ArtTypeEnum.Parabola:
+                        SetUp();
+                        ParabolaSetup();
+                        tmrParabola.Start();
+                        break;
                     default:
                         // Handle default case or error
                         break;
@@ -257,6 +277,53 @@ namespace RandomArtScreensaver
             tmrWarp.Stop();
             tmrDot.Stop();
             tmrWeeds.Stop();
+            tmrParabola.Stop();
+        }
+        private double ParabolaPerimeterLength()
+        {
+            return 2.0 * (Width + Height);
+        }
+        // Maps a scalar distance travelled along the outer edge (wrapping) to a screen point.
+        private PointF PerimeterToPoint(double pos)
+        {
+            double perimeter = ParabolaPerimeterLength();
+            pos %= perimeter;
+            if (pos < 0) pos += perimeter;
+            if (pos < Width) return new PointF((float)pos, 0); // top edge, left to right
+            pos -= Width;
+            if (pos < Height) return new PointF(Width, (float)pos); // right edge, top to bottom
+            pos -= Height;
+            if (pos < Width) return new PointF(Width - (float)pos, Height); // bottom edge, right to left
+            pos -= Width;
+            return new PointF(0, Height - (float)pos); // left edge, bottom to top
+        }
+        private Color RandomColor()
+        {
+            int r = _random.Next(256);
+            int g = _random.Next(256);
+            int b = _random.Next(256);
+            int a = Alpha ? 255 : _random.Next(256);
+            return Color.FromArgb(a, r, g, b);
+        }
+        private Color NudgeColor(Color color, int amount)
+        {
+            int r = Math.Clamp(color.R + _random.Next(-amount, amount + 1), 0, 255);
+            int g = Math.Clamp(color.G + _random.Next(-amount, amount + 1), 0, 255);
+            int b = Math.Clamp(color.B + _random.Next(-amount, amount + 1), 0, 255);
+            int a = Alpha ? 255 : Math.Clamp(color.A + _random.Next(-amount, amount + 1), 0, 255);
+            return Color.FromArgb(a, r, g, b);
+        }
+        private void ParabolaSetup() {
+            if (Settings.saverSettings == null) return;
+            double perimeter = ParabolaPerimeterLength();
+            _parabolaDistance = Settings.saverSettings.parabola.Distance;
+            if (Settings.saverSettings.parabola.RandDistance)
+            {
+                _parabolaDistance = _random.Next(1, 101);
+            }
+            _parabolaPosA = _random.NextDouble() * perimeter;
+            _parabolaPosB = _random.NextDouble() * perimeter;
+            _parabolaColor = RandomColor();
         }
         private void WarpSetup() {
             if (Settings.saverSettings == null) return;
@@ -914,6 +981,56 @@ namespace RandomArtScreensaver
                             }
                         }
                     }
+                }
+            }
+            finally
+            {
+                if (bmpData != null)
+                {
+                    _screenBuffer.UnlockBits(bmpData);
+                }
+            }
+            Invalidate();
+            Drawing = false;
+        }
+        private void DoParabola()
+        {
+            if (Drawing) return;
+            if (Settings.saverSettings == null) return;
+            if (_screenBuffer == null) return;
+            Drawing = true;
+
+            Entities.Types.Parabola settings = Settings.saverSettings.parabola;
+
+            if (settings.Drift)
+            {
+                _parabolaDistance += _random.Next(2) == 0 ? -1 : 1;
+                if (_parabolaDistance < 1) _parabolaDistance = 1;
+                if (_parabolaDistance > 100) _parabolaDistance = 100;
+            }
+
+            int dirA = _random.Next(2) == 0 ? -1 : 1;
+            int dirB = _random.Next(2) == 0 ? -1 : 1;
+            _parabolaPosA += dirA * _parabolaDistance;
+            _parabolaPosB += dirB * _parabolaDistance;
+
+            _parabolaColor = settings.SmoothColor ? NudgeColor(_parabolaColor, 1) : RandomColor();
+
+            PointF pointA = PerimeterToPoint(_parabolaPosA);
+            PointF pointB = PerimeterToPoint(_parabolaPosB);
+
+            BitmapData? bmpData = null;
+            try
+            {
+                bmpData = _screenBuffer.LockBits(new Rectangle(0, 0, _screenBuffer.Width, _screenBuffer.Height), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                IntPtr ptr = bmpData.Scan0;
+                int bytesPerPixel = Image.GetPixelFormatSize(bmpData.PixelFormat) / 8;
+                int stride = bmpData.Stride;
+
+                unsafe
+                {
+                    byte* pixelPtr = (byte*)ptr;
+                    DrawLine(pixelPtr, stride, bytesPerPixel, (int)pointA.X, (int)pointA.Y, (int)pointB.X, (int)pointB.Y, _parabolaColor);
                 }
             }
             finally

@@ -41,4 +41,11 @@ namespace RandomArtScreensaver.Entities.Types
         public int TransitionSpeed { get; set; } = 75; //how smooth between scenes
         public int TransitionCount { get; set; } = 50; //1-100
     }
+    public class Parabola
+    {
+        public int Distance { get; set; } = 10; //1-100, base step size per tick (px along perimeter)
+        public bool RandDistance { get; set; } = true; //randomize Distance at start
+        public bool Drift { get; set; } = true; //let Distance slowly drift +/-1 pixel per tick, clamped to 1-100
+        public bool SmoothColor { get; set; } = true; //true = nudge previous color; false = fully random color each line
+    }
 }
