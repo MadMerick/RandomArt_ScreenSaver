@@ -34,6 +34,7 @@ namespace RandomArtScreensaver
         private Bitmap? _screenBuffer;
         private Bitmap? _newScreenBuffer;
         private Bitmap? _originalBaseBufferForFade;
+        private Bitmap? _fadeTempBuffer;
         private bool _isBlending = false;
         private int _currentFadeStep = 0;
         private int _numberOfFadeSteps = 10;
@@ -335,6 +336,8 @@ namespace RandomArtScreensaver
             }
         }
         private void SetUp() {
+            // _fadeTempBuffer may be the same object as _screenBuffer (plasma reuses it) - drop the stale reference before disposing.
+            if (ReferenceEquals(_fadeTempBuffer, _screenBuffer)) _fadeTempBuffer = null;
             _screenBuffer?.Dispose(); // Dispose of the old bitmap if it exists
             _screenBuffer = new Bitmap(Width, Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
         }
@@ -1325,7 +1328,7 @@ namespace RandomArtScreensaver
                         short inner_i = 0; // Using a separate counter for the inner loop
                         while (inner_i < ColorAmount * ColorAmount) //keep trying new pixels until we have have found empty pixel
                         {
-                            if (templatePixels[iX, iY].Name != "0")
+                            if (!templatePixels[iX, iY].IsEmpty)
                             {
                                 short iD = (short)_random.Next(4); //Randomly choosea direction
 
@@ -1388,6 +1391,7 @@ namespace RandomArtScreensaver
                 // Dispose of the temporary original base buffer
                 _originalBaseBufferForFade?.Dispose();
                 _originalBaseBufferForFade = null;
+                // Note: _fadeTempBuffer is now _screenBuffer (the current visible scene) - do not dispose it here.
 
                 this.Invalidate();
 
@@ -1395,19 +1399,25 @@ namespace RandomArtScreensaver
                 return;
             }
 
-            float alpha = (float)_currentFadeStep / _numberOfFadeSteps;
+            // Smoothstep easing gives a slow-start/slow-end "melt" feel instead of a linear cross-fade.
+            float t = (float)_currentFadeStep / _numberOfFadeSteps;
+            float alpha = t * t * (3f - 2f * t);
 
-            // Create a temporary bitmap for this step's rendering
-            // It's crucial to create a new bitmap for each step or clear and redraw onto one,
-            // otherwise, you'll accumulate the alpha blending.
-            Bitmap tempBuffer = new Bitmap(_screenBuffer.Width, _screenBuffer.Height, PixelFormat.Format32bppArgb);
+            // Reuse one scratch bitmap across fade steps instead of allocating a new one every tick.
+            if (_fadeTempBuffer == null || _fadeTempBuffer.Width != _screenBuffer.Width || _fadeTempBuffer.Height != _screenBuffer.Height)
+            {
+                _fadeTempBuffer?.Dispose();
+                _fadeTempBuffer = new Bitmap(_screenBuffer.Width, _screenBuffer.Height, PixelFormat.Format32bppArgb);
+            }
+            Bitmap tempBuffer = _fadeTempBuffer;
 
             using (Graphics g = Graphics.FromImage(tempBuffer))
             {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                // No scaling occurs here (source/dest are the same size), so the fastest modes look identical to high-quality ones.
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+                g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighSpeed;
 
                 // 1. Draw the original base _screenBuffer state (before fading started)
                 // This ensures _newScreenBuffer is blended onto a clean, stable base.
@@ -1428,10 +1438,10 @@ namespace RandomArtScreensaver
                             ia);
             }
 
-            // Now, update _screenBuffer with the newly rendered frame
-            // Dispose the old _screenBuffer if it's not the same instance as _originalBaseBufferForFade
-            _screenBuffer?.Dispose();
-            _screenBuffer = tempBuffer; // _screenBuffer now holds the current fade state
+            // On the first fade tick _screenBuffer is still the pre-fade scene, not the scratch buffer - dispose it once.
+            if (!ReferenceEquals(_screenBuffer, tempBuffer))
+                _screenBuffer.Dispose();
+            _screenBuffer = tempBuffer;
 
             // Request a repaint of the control, which will use the updated _screenBuffer
             Invalidate();
@@ -1449,30 +1459,25 @@ namespace RandomArtScreensaver
 
             // Get the colors from the templatePixels or the image
             Color cTopLeft = templatePixels[left, top];
-            if (cTopLeft.Name == "0") cTopLeft = GetPixelColor(pixelPtr, stride, bytesPerPixel, left, top);
+            if (cTopLeft.IsEmpty) cTopLeft = GetPixelColor(pixelPtr, stride, bytesPerPixel, left, top);
             Color cTopRight = templatePixels[width, top];
-            if (cTopRight.Name == "0") cTopRight = GetPixelColor(pixelPtr, stride, bytesPerPixel, width, top);
+            if (cTopRight.IsEmpty) cTopRight = GetPixelColor(pixelPtr, stride, bytesPerPixel, width, top);
             Color cBottomRight = templatePixels[width, height];
-            if (cBottomRight.Name == "0") cBottomRight = GetPixelColor(pixelPtr, stride, bytesPerPixel, width, height);
+            if (cBottomRight.IsEmpty) cBottomRight = GetPixelColor(pixelPtr, stride, bytesPerPixel, width, height);
             Color cBottomLeft = templatePixels[left, height];
-            if (cBottomLeft.Name == "0") cBottomLeft = GetPixelColor(pixelPtr, stride, bytesPerPixel, left, height);
+            if (cBottomLeft.IsEmpty) cBottomLeft = GetPixelColor(pixelPtr, stride, bytesPerPixel, left, height);
 
             // Calculate the mid-point colors using the correct neighbors
             Color cMidTop = templatePixels[midX, top];
-            //if (cMidTop.Name == "0") cMidTop = GetPixelColor(pixelPtr, stride, bytesPerPixel, midX, top);
-            if (cMidTop.Name == "0") cMidTop = AverageColor(cTopLeft, cTopRight);
+            if (cMidTop.IsEmpty) cMidTop = AverageColor(cTopLeft, cTopRight);
             Color cMidBottom = templatePixels[midX, height];
-            //if (cMidBottom.Name == "0") cMidBottom = GetPixelColor(pixelPtr, stride, bytesPerPixel, midX, height);
-            if (cMidBottom.Name == "0") cMidBottom = AverageColor(cBottomLeft, cBottomRight);
+            if (cMidBottom.IsEmpty) cMidBottom = AverageColor(cBottomLeft, cBottomRight);
             Color cMidLeft = templatePixels[left, midY];
-            //if (cMidLeft.Name == "0") cMidLeft = GetPixelColor(pixelPtr, stride, bytesPerPixel, left, midY);
-            if (cMidLeft.Name == "0") cMidLeft = AverageColor(cTopLeft, cBottomLeft);
+            if (cMidLeft.IsEmpty) cMidLeft = AverageColor(cTopLeft, cBottomLeft);
             Color cMidRight = templatePixels[width, midY];
-            //if (cMidRight.Name == "0") cMidRight = GetPixelColor(pixelPtr, stride, bytesPerPixel, width, midY);
-            if (cMidRight.Name == "0") cMidRight = AverageColor(cTopRight, cBottomRight);
+            if (cMidRight.IsEmpty) cMidRight = AverageColor(cTopRight, cBottomRight);
             Color cMiddle = templatePixels[midX, midY];
-            //if (cMiddle.Name == "0") cMiddle = GetPixelColor(pixelPtr, stride, bytesPerPixel, midX, midY);
-            if (cMiddle.Name == "0") cMiddle = AverageColor4(cTopLeft, cTopRight, cBottomLeft, cBottomRight);
+            if (cMiddle.IsEmpty) cMiddle = AverageColor4(cTopLeft, cTopRight, cBottomLeft, cBottomRight);
 
             // Draw the corners
             DrawPixel(pixelPtr, stride, bytesPerPixel, left, top, cTopLeft);
