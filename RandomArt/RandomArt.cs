@@ -13,6 +13,9 @@ namespace RandomArtScreensaver
         #region Static Methods for Screen Saver Functionality
         private Random _random = new Random();
         private bool Drawing = false;
+        private bool _isTickRunning = false;
+        private bool _transitionActive = false;
+        private bool _stopRequested = false;
         public System.Windows.Forms.Timer tmrPlasma = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrPlasmaBlend = new System.Windows.Forms.Timer();
         public System.Windows.Forms.Timer tmrDot = new System.Windows.Forms.Timer();
@@ -121,45 +124,63 @@ namespace RandomArtScreensaver
         }
         #endregion
         #region Tick
+        private void RunTick(Action action)
+        {
+            if (_isTickRunning)
+            {
+                return;
+            }
+
+            _isTickRunning = true;
+            try
+            {
+                action();
+            }
+            finally
+            {
+                _isTickRunning = false;
+            }
+        }
+
         private void tmrGrow_Tick(object? sender, EventArgs e)
         {
-            DoGrow();
+            RunTick(DoGrow);
         }
         private void tmrScribble_Tick(object? sender, EventArgs e)
         {
-            DoScribble();
+            RunTick(DoScribble);
         }
         private void tmrWeeds_Tick(object? sender, EventArgs e)
         {
-            DoWeeds();
+            RunTick(DoWeeds);
         }
         private void tmrWarp_Tick(object? sender, EventArgs e)
         {
-            DoWarp();
+            RunTick(DoWarp);
         }
         private void tmrParabola_Tick(object? sender, EventArgs e)
         {
-            DoParabola();
+            RunTick(DoParabola);
         }
         private void tmrDot_Tick(object? sender, EventArgs e)
         {
-            DoDot();
+            RunTick(DoDot);
         }
         private void tmrLight_Tick(object? sender, EventArgs e)
         {
-            DoLight();
+            RunTick(DoLight);
         }
         private void tmrBubbles_Tick(object? sender, EventArgs e)
         {
-            DoBubble();
+            RunTick(DoBubble);
         }
         private void tmrPlasma_Tick(object? sender, EventArgs e)
         {
-            DoPlasma();
+            RunTick(DoPlasma);
         }
         private void tmrPlasmaBlend_Tick(object? sender, EventArgs e)
         {
-            DoPlasmaBlend();
+            RunTick(DoPlasmaBlend);
         }
         #endregion
         #region ScreenSaver Implementation
@@ -267,9 +288,8 @@ namespace RandomArtScreensaver
                 Settings.Log($"Stack Trace: {ex.StackTrace}");
             }
         }
-        public void Stop() {
-            Settings.All_artType = null;
-            _artType = null;
+        private void StopAllTimers()
+        {
             tmrGrow.Stop();
             tmrLight.Stop();
             tmrPlasma.Stop();
@@ -279,6 +299,22 @@ namespace RandomArtScreensaver
             tmrDot.Stop();
             tmrWeeds.Stop();
             tmrParabola.Stop();
+            tmrPlasmaBlend.Stop();
+            _transitionActive = false;
+            _stopRequested = false;
+        }
+
+        public void Stop() {
+            if (_transitionActive || tmrPlasmaBlend.Enabled || _currentFadeStep < _numberOfFadeSteps)
+            {
+                _stopRequested = true;
+                return;
+            }
+
+            Settings.All_artType = null;
+            _artType = null;
+            _isTickRunning = false;
+            StopAllTimers();
         }
         private double ParabolaPerimeterLength()
         {
@@ -1376,6 +1412,7 @@ namespace RandomArtScreensaver
             Drawing = false;
             Application.DoEvents();
             tmrPlasma.Stop();
+            _transitionActive = true;
             _originalBaseBufferForFade = (Bitmap)_screenBuffer.Clone();
             _currentFadeStep = 0;
             tmrPlasmaBlend.Start();
@@ -1387,6 +1424,7 @@ namespace RandomArtScreensaver
             {
                 // Fade complete
                 tmrPlasmaBlend.Stop();
+                _transitionActive = false;
 
                 // Dispose of the temporary original base buffer
                 _originalBaseBufferForFade?.Dispose();
@@ -1394,6 +1432,15 @@ namespace RandomArtScreensaver
                 // Note: _fadeTempBuffer is now _screenBuffer (the current visible scene) - do not dispose it here.
 
                 this.Invalidate();
+
+                if (_stopRequested)
+                {
+                    Settings.All_artType = null;
+                    _artType = null;
+                    _isTickRunning = false;
+                    StopAllTimers();
+                    return;
+                }
 
                 tmrPlasma.Start();
                 return;
